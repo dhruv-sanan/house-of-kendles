@@ -8,6 +8,7 @@ import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/footer'
 import { ShoppingBag, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { FadeIn } from '@/components/ui/motion-wrappers'
 
 export const metadata = {
     title: 'My Orders | House of Kendles',
@@ -79,13 +80,13 @@ export default async function OrdersPage() {
     return (
         <>
             <SiteHeader />
-            <main className="min-h-screen bg-gradient-to-b from-white via-brand-50/20 to-white">
-                <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
+            <main className="min-h-screen bg-surface">
+                <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
                     {/* Header */}
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-brand-900 font-heading">My Orders</h1>
-                        <p className="mt-2 text-gray-600">Track and manage your orders</p>
-                    </div>
+                    <FadeIn className="mb-10 text-center">
+                        <h1 className="text-4xl md:text-5xl font-bold text-brand-900 font-heading">My Orders</h1>
+                        <p className="mt-3 text-brand-900/60 font-medium tracking-wide uppercase text-sm">Track and manage your history</p>
+                    </FadeIn>
 
                     {/* Order List */}
                     <Suspense

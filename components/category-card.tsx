@@ -21,12 +21,12 @@ export function CategoryCard({
           style={{
             backgroundImage: `url('/images/category-${title.toLowerCase().replace(/\s+/g, '-')}.jpg')`, // Try to load local image first
             // Fallback logic would go here in a real app, or just rely on the user uploading images
-             backgroundColor: 'var(--color-brand-900)' // Fallback color
+            backgroundColor: 'var(--color-brand-900)' // Fallback color
           }}
         />
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300" />
-        
+
         <div className="absolute inset-0 p-8 flex flex-col justify-end">
           <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
             <h3 className="font-heading text-3xl text-white mb-2">{title}</h3>

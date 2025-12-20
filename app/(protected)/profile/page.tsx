@@ -7,6 +7,7 @@ import { SiteFooter } from '@/components/footer'
 import { ProfileClient } from '@/components/profile-client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Loader2, Mail, User } from 'lucide-react'
+import { FadeIn } from '@/components/ui/motion-wrappers'
 
 export const metadata = {
     title: 'Profile | House of Kendles',
@@ -44,42 +45,46 @@ export default async function ProfilePage() {
     return (
         <>
             <SiteHeader />
-            <main className="min-h-screen bg-gradient-to-b from-white via-brand-50/20 to-white">
-                <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+            <main className="min-h-screen bg-surface">
+                <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
                     {/* Profile Header */}
-                    <div className="mb-10">
-                        <div className="flex flex-col sm:flex-row items-center gap-6 p-6 rounded-xl bg-white border border-brand/10 shadow-sm">
+                    <FadeIn className="mb-12">
+                        <div className="flex flex-col sm:flex-row items-center gap-8 p-8 rounded-2xl bg-white border border-brand/10 shadow-sm relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 opacity-5">
+                                <User className="w-32 h-32 text-brand-900" />
+                            </div>
+
                             {/* Avatar */}
-                            <Avatar className="h-20 w-20 ring-4 ring-brand/10">
+                            <Avatar className="h-24 w-24 ring-4 ring-brand/10 shadow-md">
                                 <AvatarImage src={userAvatar} alt={userName} />
-                                <AvatarFallback className="bg-brand-100 text-brand-900 text-xl font-semibold">
+                                <AvatarFallback className="bg-brand-900 text-gold text-2xl font-heading">
                                     {userInitials}
                                 </AvatarFallback>
                             </Avatar>
 
                             {/* User Info */}
-                            <div className="flex-1 text-center sm:text-left">
-                                <h1 className="text-2xl font-bold text-brand-900">{userName}</h1>
-                                <div className="mt-2 flex flex-col sm:flex-row items-center gap-4 text-sm text-gray-500">
+                            <div className="flex-1 text-center sm:text-left relative z-10">
+                                <h1 className="text-3xl font-bold text-brand-900 font-heading">{userName}</h1>
+                                <div className="mt-3 flex flex-col sm:flex-row items-center gap-6 text-sm text-brand-900/60 font-medium">
                                     <div className="flex items-center gap-2">
-                                        <Mail className="h-4 w-4" />
+                                        <Mail className="h-4 w-4 text-brand-900/40" />
                                         {userEmail}
                                     </div>
                                     {customer?.phone && (
                                         <div className="flex items-center gap-2">
-                                            <User className="h-4 w-4" />
+                                            <User className="h-4 w-4 text-brand-900/40" />
                                             {customer.phone}
                                         </div>
                                     )}
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </FadeIn>
 
                     {/* Addresses Section */}
                     <section className="mb-10">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-2xl font-bold text-brand-900">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-2xl font-bold text-brand-900 font-heading">
                                 My Addresses
                             </h2>
                             <ProfileClient />

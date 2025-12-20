@@ -10,6 +10,7 @@ import { getCurrentUser } from '@/lib/auth'
 import { ORDER_STATUS_INFO, type OrderStatus } from '@/types/order.types'
 import { MapPin, Phone, Mail, User, Gift, ShoppingBag, ArrowLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { FadeIn, SlideIn } from '@/components/ui/motion-wrappers'
 
 // Disable caching so order status is always current
 export const dynamic = 'force-dynamic'
@@ -48,13 +49,13 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   return (
     <>
       <SiteHeader />
-      <main className="min-h-screen bg-gradient-to-b from-white via-brand-50/20 to-white">
-        <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+      <main className="min-h-screen bg-surface">
+        <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
           {/* Back Link */}
           {isOwner && (
             <Link
               href="/orders"
-              className="inline-flex items-center text-sm text-gray-600 hover:text-brand-900 mb-6"
+              className="inline-flex items-center text-sm font-medium text-brand-900/60 hover:text-brand-900 mb-8 transition-colors"
             >
               <ArrowLeft className="h-4 w-4 mr-1" />
               Back to Orders
@@ -62,19 +63,20 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           )}
 
           {/* Order Header */}
-          <div className="text-center mb-8">
-            <h1 className="font-heading text-3xl text-brand-900">
+          <FadeIn className="text-center mb-12">
+            <h1 className="font-heading text-4xl md:text-5xl text-brand-900 mb-3">
               {order.status === 'pending_payment'
                 ? 'Order Placed!'
                 : order.status === 'delivered'
                   ? 'Order Delivered!'
                   : 'Order Details'}
             </h1>
-            <p className="text-gray-600 mt-2">
-              Order <span className="font-medium text-brand-900">{order.order_uid}</span>
+            <p className="text-brand-900/60 font-medium uppercase tracking-wide text-sm">
+              <span className="mr-2">Order {order.order_uid}</span>
+              <span>•</span>
+              <span className="ml-2">{formattedDate}</span>
             </p>
-            <p className="text-sm text-gray-500">{formattedDate}</p>
-          </div>
+          </FadeIn>
 
           {/* Status Tracker */}
           <div className="bg-white rounded-xl border border-brand/10 p-6 mb-6">

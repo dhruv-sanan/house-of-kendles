@@ -11,7 +11,7 @@ import { ProductWithVariants } from "@/app/_actions/products"
 import { useMemo, useState, useEffect } from "react"
 import { Loader2, Check, ShoppingBag } from "lucide-react"
 import { useSidebar } from "@/components/ui/sidebar"
- 
+
 type ProductCardProps = {
   product: ProductWithVariants
   className?: string
@@ -30,7 +30,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
     }
     const prices = product.variants.map(v => v.price)
     const firstVariant = product.variants[0];
-    
+
     return {
       lowestPrice: Math.min(...prices),
       hasMultipleVariants: product.variants.length > 1,
@@ -63,14 +63,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
       price: singleVariant.price,
       image_url: singleVariant.image_url || product.image_url,
     })
-    
+
     setIsAdding(false)
     setJustAdded(true)
-    
+
     // Reset the "Just Added" state after a few seconds if they don't click it
     setTimeout(() => setJustAdded(false), 3000)
   }
-  
+
   const badge = product.variants.some(v => v.is_bestseller) ? "Bestseller" : undefined
 
   return (
@@ -92,7 +92,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           )}
         </div>
       </CardHeader>
-      <CardContent className="flex-grow space-y-1 p-4">
+      <CardContent className="flex-grow p-3">
         <Link href={`/product/${product.slug}`}>
           <h3 className="font-heading text-lg hover:text-gold transition-colors line-clamp-1">{product.name}</h3>
         </Link>
@@ -100,7 +100,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           {hasMultipleVariants ? "From " : ""}₹{lowestPrice}
         </p>
       </CardContent>
-      <CardFooter className="p-4 pt-0 mt-auto">
+      <CardFooter className="p-2 pt-0 mt-auto">
         {hasMultipleVariants ? (
           <Link href={`/product/${product.slug}`} className="w-full">
             <Button variant="outline" className="w-full border-brand-900/20 hover:bg-brand-900 hover:text-white transition-all">
@@ -110,9 +110,9 @@ export function ProductCard({ product, className }: ProductCardProps) {
         ) : (
           <Button
             className={cn(
-              "w-full transition-all duration-300",
-              justAdded 
-                ? "bg-green-600 hover:bg-green-700 text-white" 
+              "w-full transition-all duration-300 h-9 text-sm",
+              justAdded
+                ? "bg-green-600 hover:bg-green-700 text-white"
                 : "bg-brand-900 text-white hover:bg-brand-900/90"
             )}
             onClick={justAdded ? () => setOpen(true) : handleAdd}

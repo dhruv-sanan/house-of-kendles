@@ -19,7 +19,7 @@
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0); 
+  --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
@@ -37,14 +37,19 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  
+
   /* --- BRAND COLORS --- */
-  --brand-green: oklch(0.35 0.06 170); /* deep forest green */
-  --brand-green-900: oklch(0.28 0.05 170); /* darker variant for hero/nav */
-  --brand-gold: oklch(0.82 0.13 85); /* rich gold */
-  --neutral-0: oklch(0.99 0 0); /* off-white */
-  --neutral-900: oklch(0.13 0 0); /* near-black for text */
-  
+  --brand-green: oklch(0.35 0.06 170);
+  /* deep forest green */
+  --brand-green-900: oklch(0.28 0.05 170);
+  /* darker variant for hero/nav */
+  --brand-gold: oklch(0.82 0.13 85);
+  /* rich gold */
+  --neutral-0: oklch(0.99 0 0);
+  /* off-white */
+  --neutral-900: oklch(0.13 0 0);
+  /* near-black for text */
+
   /* Map brand colors to semantic names */
   --color-brand: var(--brand-green);
   --color-brand-900: var(--brand-green-900);
@@ -134,12 +139,35 @@
   --color-surface: var(--color-surface);
   --color-ink: var(--color-ink);
 
+  --animate-marquee: marquee var(--marquee-duration, 25s) linear infinite;
+  --animate-marquee-reverse: marquee-reverse var(--marquee-duration, 25s) linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  @keyframes marquee-reverse {
+    from {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(0);
+    }
+  }
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -149,15 +177,19 @@
   .font-heading {
     font-family: var(--font-serif);
   }
+
   .bg-brand {
     background-color: var(--color-brand);
   }
+
   .bg-brand-900 {
     background-color: var(--color-brand-900);
   }
+
   .text-gold {
     color: var(--color-accent-gold);
   }
+
   .bg-gold {
     background-color: var(--color-accent-gold);
   }
@@ -166,13 +198,16 @@
     0% {
       transform: scale(1);
     }
+
     30% {
       transform: scale(1.1);
     }
+
     100% {
       transform: scale(1);
     }
   }
+
   .cart-bump {
     animation: cart-bump-kf 300ms ease-in-out;
   }
@@ -182,14 +217,17 @@
       opacity: 0;
       transform: translateY(6px) scale(0.98);
     }
+
     20% {
       opacity: 1;
     }
+
     100% {
       opacity: 0;
       transform: translateY(-10px) scale(1);
     }
   }
+
   .float-up {
     animation: float-up-kf 700ms ease-out forwards;
   }

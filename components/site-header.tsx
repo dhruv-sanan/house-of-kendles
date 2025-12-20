@@ -106,54 +106,51 @@ export function SiteHeader() {
                 side="left"
                 className="w-[300px] sm:w-[400px] pr-0 bg-white/95 backdrop-blur-xl border-brand/10"
               >
-                <SheetHeader className="px-4 text-left flex items-center justify-between">
+                <SheetHeader className="px-4 text-left">
                   <SheetTitle className="font-heading text-2xl text-brand-900">House of Kendles</SheetTitle>
-                  <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </SheetTrigger>
                 </SheetHeader>
                 <div className="h-full overflow-y-auto px-4 pb-20 pt-4">
-                  {/* Mobile User Section */}
-                  {user && (
-                    <div className="mb-4 p-4 rounded-lg bg-brand/5 border border-brand/10">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10 ring-2 ring-brand/20">
-                          <AvatarImage src={userAvatar} alt={userName} />
-                          <AvatarFallback className="bg-brand-100 text-brand-900 font-medium">
-                            {userInitials}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-brand-900 truncate">{userName}</p>
-                          <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
-                        </div>
-                      </div>
-                      <div className="mt-3 flex flex-col gap-2">
-                        <MobileLink href="/orders" onClick={() => setMobileMenuOpen(false)}>
-                          <Package className="h-4 w-4 mr-2" />
-                          My Orders
-                        </MobileLink>
-                        <MobileLink href="/profile" onClick={() => setMobileMenuOpen(false)}>
-                          <User className="h-4 w-4 mr-2" />
-                          Profile
-                        </MobileLink>
-                        <button
-                          onClick={() => {
-                            setMobileMenuOpen(false)
-                            handleSignOut()
-                          }}
-                          className="flex items-center text-red-600 rounded-md p-2 text-sm hover:bg-red-50 transition-colors"
-                        >
-                          <LogOut className="h-4 w-4 mr-2" />
-                          Sign Out
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
                   <Accordion type="single" collapsible className="w-full">
+                    {/* User Section as Accordion Item */}
+                    {user && (
+                      <AccordionItem value="account" className="border-b-0 mb-2">
+                        <AccordionTrigger className="hover:no-underline py-2">
+                          <div className="flex items-center gap-3 w-full text-left">
+                            <Avatar className="h-8 w-8 ring-1 ring-brand/20">
+                              <AvatarImage src={userAvatar} alt={userName} />
+                              <AvatarFallback className="bg-brand-100 text-brand-900 text-xs font-medium">
+                                {userInitials}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-brand-900 truncate text-sm">{userName}</p>
+                              <p className="text-[10px] text-muted-foreground truncate">{userEmail}</p>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="flex flex-col space-y-2 pl-2 bg-brand/5 rounded-lg mb-2">
+                          <MobileLink href="/orders" onClick={() => setMobileMenuOpen(false)}>
+                            <Package className="h-4 w-4 mr-2" />
+                            My Orders
+                          </MobileLink>
+                          <MobileLink href="/profile" onClick={() => setMobileMenuOpen(false)}>
+                            <User className="h-4 w-4 mr-2" />
+                            Profile
+                          </MobileLink>
+                          <button
+                            onClick={() => {
+                              setMobileMenuOpen(false)
+                              handleSignOut()
+                            }}
+                            className="flex items-center text-red-600 rounded-md p-2 text-sm hover:bg-red-50 transition-colors w-full text-left"
+                          >
+                            <LogOut className="h-4 w-4 mr-2" />
+                            Sign Out
+                          </button>
+                        </AccordionContent>
+                      </AccordionItem>
+                    )}
+
                     <AccordionItem value="candles">
                       <AccordionTrigger className="font-medium text-brand-900 hover:text-gold">
                         Candles
@@ -192,29 +189,30 @@ export function SiteHeader() {
                         </MobileLink>
                       </AccordionContent>
                     </AccordionItem>
-                    <div className="flex flex-col space-y-4 py-4 font-medium">
-                      <MobileLink href="/bath-salt" onClick={() => setMobileMenuOpen(false)}>
-                        Bath Salt
-                      </MobileLink>
-                      <MobileLink href="/gifting" onClick={() => setMobileMenuOpen(false)}>
-                        Gifting
-                      </MobileLink>
-                      <MobileLink href="/our-story" onClick={() => setMobileMenuOpen(false)}>
-                        Our Story
-                      </MobileLink>
-                      <MobileLink
-                        href="/quiz"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="text-gold font-semibold"
-                      >
-                        Find Your Scent
-                      </MobileLink>
-                    </div>
                   </Accordion>
+
+                  <div className="flex flex-col space-y-4 py-4 font-medium border-t border-brand/10 mt-2">
+                    <MobileLink href="/bath-salt" onClick={() => setMobileMenuOpen(false)}>
+                      Bath Salt
+                    </MobileLink>
+                    <MobileLink href="/gifting" onClick={() => setMobileMenuOpen(false)}>
+                      Gifting
+                    </MobileLink>
+                    <MobileLink href="/our-story" onClick={() => setMobileMenuOpen(false)}>
+                      Our Story
+                    </MobileLink>
+                    <MobileLink
+                      href="/quiz"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="text-gold font-semibold"
+                    >
+                      Find Your Scent
+                    </MobileLink>
+                  </div>
 
                   {/* Mobile Sign In Button */}
                   {!user && !loading && (
-                    <div className="mt-4 pt-4 border-t">
+                    <div className="mt-4 pt-4 border-t border-brand/10">
                       <Link
                         href="/sign-in"
                         onClick={() => setMobileMenuOpen(false)}
