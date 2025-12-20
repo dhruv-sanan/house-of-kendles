@@ -19,13 +19,13 @@ const CustomerDetailsSchema = z.object({
 async function generateUniqueOrderId(retryCount = 0): Promise<string> {
   // 1. Define length: Starts at 4, increases if we hit too many retries (exhaustion safety)
   const length = retryCount > 6 ? 5 : 4;
-  
+
   // 2. Generate Random Number
   // Math.random() generates 0-1. We multiply to get e.g. 0-9999.
   const max = Math.pow(10, length);
   const randomNum = Math.floor(Math.random() * max);
   const numericPart = randomNum.toString().padStart(length, "0");
-  
+
   const newId = `HOK-${numericPart}`;
 
   // 3. Check DB for collision
@@ -103,7 +103,7 @@ export async function createOrder(cartItems: CartItem[], formData: FormData) {
       .select("id")
       .eq("email", customerData.email)
       .single()
-    
+
     if (!customer) {
       const { data: newCustomer, error: newCustomerError } = await supabase
         .from("customers")
@@ -135,17 +135,17 @@ export async function createOrder(cartItems: CartItem[], formData: FormData) {
     if (orderError) throw new Error("Could not create order.")
 
     const orderId = order.id
-    
+
     // 5. Generate Unique ID and Update
     // We do this AFTER creating the ID row to avoid race conditions on "checking"
     // although generating first is also fine, updating specific row is safer.
     const uniqueOrderUid = await generateUniqueOrderId();
-    
+
     const { error: updateError } = await supabase
       .from("orders")
       .update({ order_uid: uniqueOrderUid })
       .eq("id", orderId)
-    
+
     if (updateError) throw new Error("Could not assign Order ID.")
 
     // 6. Add Items
@@ -161,12 +161,12 @@ export async function createOrder(cartItems: CartItem[], formData: FormData) {
 
     // 7. Decrement Stock
     for (const item of cartItems) {
-      await supabase.rpc("decrement_stock", { 
+      await supabase.rpc("decrement_stock", {
         variant_id_to_update: item.variant_id,
         quantity_to_decrement: item.qty,
       })
     }
-    
+
     revalidatePath(`/order/${uniqueOrderUid}`)
 
     return { success: true, orderUid: uniqueOrderUid }
@@ -177,14 +177,24 @@ export async function createOrder(cartItems: CartItem[], formData: FormData) {
 }
 
 export async function updateOrderStatus(orderId: number, newStatus: string) {
-  const { error } = await supabase
+  console.log('[Admin] Updating order status:', orderId, 'to', newStatus)
+
+  const { data, error } = await supabase
     .from("orders")
     .update({ status: newStatus })
     .eq("id", orderId)
+    .select('id, status')
+    .single()
 
-  if (error) return { success: false, error: "Failed to update status." }
+  if (error) {
+    console.error('[Admin] Error updating order status:', error)
+    return { success: false, error: `Failed to update status: ${error.message}` }
+  }
+
+  console.log('[Admin] Order status updated:', data)
   revalidatePath("/admin/orders")
-  return { success: true }
+  revalidatePath(`/order/${orderId}`)
+  return { success: true, data }
 }
 
 export async function getOrders() {
