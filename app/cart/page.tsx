@@ -10,39 +10,38 @@ import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 import Image from "next/image"
 import { Minus, Plus, Trash2, Tag, ArrowRight, ShoppingBag, Check, ChevronLeft, ChevronRight, Sparkles } from "lucide-react"
-import { validateCoupon, getAvailableCoupons, getRecommendedItems, type Coupon } from "@/app/_actions/cartActions"
+import { validateCoupon, getAvailableCoupons, type Coupon } from "@/app/_actions/cartActions"
+import { getImpulseRecommendations } from "@/lib/recommendations"
 import { useToast } from "@/hooks/use-toast"
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
-
-type RecommendedItem = {
-  id: number
-  slug: string
-  name: string
-  price: number
-  image: string | null
-  variantId: number
-}
+import type { RecommendedProduct } from "@/types/recommendation.types"
 
 export default function CartPage() {
   const { cart, total, subtotal, discount, setQty, remove, applyCoupon, appliedCoupon, addItem } = useCart()
   const { toast } = useToast()
-  
+
   const [couponInput, setCouponInput] = useState("")
   const [isValidating, setIsValidating] = useState(false)
   const [coupons, setCoupons] = useState<Coupon[]>([])
-  const [recommendations, setRecommendations] = useState<RecommendedItem[]>([])
+  const [recommendations, setRecommendations] = useState<RecommendedProduct[]>([])
   const [recCarouselApi, setRecCarouselApi] = useState<CarouselApi>()
   const [isOfferOpen, setIsOfferOpen] = useState(false)
 
+  // Fetch coupons on mount
   useEffect(() => {
     getAvailableCoupons().then(allCoupons => {
       const allowedCodes = ['WELCOME', 'SAVE50']
       setCoupons(allCoupons.filter(c => allowedCodes.includes(c.code)))
     })
-    getRecommendedItems().then(setRecommendations)
   }, [])
+
+  // Fetch recommendations when cart items change
+  useEffect(() => {
+    const cartProductIds = cart.items.map(item => item.product_id)
+    getImpulseRecommendations(cartProductIds, 8).then(setRecommendations)
+  }, [cart.items])
 
   const handleApplyCoupon = async () => {
     if (!couponInput) return
@@ -92,7 +91,7 @@ export default function CartPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
-              
+
               {/* Left Column: Cart Items + Recommendations */}
               <div className="lg:col-span-8 space-y-8">
                 {/* Items List */}
@@ -103,7 +102,7 @@ export default function CartPage() {
                       return (
                         <div key={item.variant_id} className="flex gap-4 md:gap-6 group">
                           <div className="relative h-24 w-24 md:h-32 md:w-32 shrink-0 overflow-hidden rounded-lg bg-muted border">
-                            <Image 
+                            <Image
                               src={item.image_url || "/placeholder.png"}
                               alt={item.name}
                               fill
@@ -113,12 +112,12 @@ export default function CartPage() {
                           <div className="flex flex-1 flex-col justify-between">
                             <div className="flex justify-between items-start">
                               <div>
-                              <Link
-                                href={`/product/${item.slug ?? item.product_id}`} // 👈 fallback for old items
-                                className="font-heading text-lg md:text-xl text-brand-900 hover:underline line-clamp-2"
-                              >
-                                {item.name}
-                              </Link>
+                                <Link
+                                  href={`/product/${item.slug ?? item.product_id}`} // 👈 fallback for old items
+                                  className="font-heading text-lg md:text-xl text-brand-900 hover:underline line-clamp-2"
+                                >
+                                  {item.name}
+                                </Link>
                                 <p className="text-sm text-muted-foreground mt-1">Size: {item.size}</p>
                               </div>
                               <div className="text-right">
@@ -134,21 +133,21 @@ export default function CartPage() {
                             </div>
                             <div className="flex items-center justify-between mt-4">
                               <div className="flex items-center border rounded-md h-9 bg-surface">
-                                <button 
+                                <button
                                   className="px-3 h-full hover:bg-muted text-muted-foreground transition-colors"
                                   onClick={() => item.qty > 1 ? setQty(item.variant_id, item.qty - 1) : remove(item.variant_id)}
                                 >
                                   <Minus className="h-3.5 w-3.5" />
                                 </button>
                                 <span className="w-8 text-center text-sm font-medium">{item.qty}</span>
-                                <button 
+                                <button
                                   className="px-3 h-full hover:bg-muted text-muted-foreground transition-colors"
                                   onClick={() => setQty(item.variant_id, item.qty + 1)}
                                 >
                                   <Plus className="h-3.5 w-3.5" />
                                 </button>
                               </div>
-                              <button 
+                              <button
                                 onClick={() => remove(item.variant_id)}
                                 className="text-sm text-muted-foreground hover:text-red-600 flex items-center gap-1 transition-colors"
                               >
@@ -184,19 +183,19 @@ export default function CartPage() {
                         {recommendations.map((rec) => (
                           <CarouselItem key={rec.id} className="pl-4 basis-1/2 sm:basis-1/3 lg:basis-1/4">
                             <div className="bg-white rounded-xl border border-transparent hover:border-brand/20 p-3 shadow-sm hover:shadow-md transition-all cursor-pointer group"
-                                onClick={() => {
-                                  addItem({
-                                    variant_id: rec.variantId,
-                                    product_id: rec.id,
-                                    slug: rec.slug,
-                                    name: rec.name,
-                                    size: "Standard",
-                                    price: rec.price,
-                                    image_url: rec.image,
-                                    qty: 1
-                                  })
-                                  toast({ title: "Added to cart!" })
-                                }}>
+                              onClick={() => {
+                                addItem({
+                                  variant_id: rec.variantId,
+                                  product_id: rec.id,
+                                  slug: rec.slug,
+                                  name: rec.name,
+                                  size: rec.size || rec.flavor || "Standard",
+                                  price: rec.price,
+                                  image_url: rec.image,
+                                  qty: 1
+                                })
+                                toast({ title: "Added to cart!" })
+                              }}>
                               <div className="relative aspect-square bg-muted rounded-lg mb-3 overflow-hidden">
                                 <Image src={rec.image || "/placeholder.png"} alt={rec.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                                 <div className="absolute bottom-2 right-2 bg-white rounded-full p-1.5 shadow-md opacity-0 translate-y-2 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
@@ -218,7 +217,7 @@ export default function CartPage() {
               <div className="lg:col-span-4">
                 <div className="bg-white rounded-xl shadow-sm border p-6 sticky top-24">
                   <h3 className="font-heading text-2xl mb-6">Order Summary</h3>
-                  
+
                   {/* Unified Coupon Input */}
                   <div className="mb-6">
                     <label className="text-sm font-medium mb-2 block">Promo Code</label>
@@ -238,8 +237,8 @@ export default function CartPage() {
                     ) : (
                       <div className="flex gap-2">
                         <div className="relative flex-1">
-                          <Input 
-                            placeholder="Enter code" 
+                          <Input
+                            placeholder="Enter code"
                             value={couponInput}
                             onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
                             className="uppercase pr-20"
@@ -313,7 +312,7 @@ export default function CartPage() {
                       Checkout <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
-                  
+
                   <div className="mt-6 flex items-center justify-center gap-2 text-xs text-muted-foreground">
                     <Check className="h-3 w-3" /> Secure Checkout
                   </div>

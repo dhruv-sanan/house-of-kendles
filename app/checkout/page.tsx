@@ -71,6 +71,8 @@ export default function CheckoutPage() {
         } else {
           setSelectedAddressId(addressData[0].id)
         }
+        // Important: explicitly disable manual address entry when addresses are found
+        setUseManualAddress(false)
       } else {
         setUseManualAddress(true)
       }
@@ -82,6 +84,7 @@ export default function CheckoutPage() {
       setAddressesFetched(true)
     }
   }, [user, authLoading, addressesFetched])
+
 
   // Fetch addresses when auth state is ready
   useEffect(() => {

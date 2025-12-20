@@ -12,6 +12,7 @@ import { CartSidebar } from "@/components/cart-sidebar"
 import { Toaster as ShadcnToaster } from "@/components/ui/toaster"
 import { Toaster as SonnerToaster } from "sonner"
 import { AuthProvider } from "@/providers/auth-provider"
+import { SessionProvider } from "@/hooks/use-session"
 
 export const metadata: Metadata = {
   title: "House of Kendles",
@@ -34,26 +35,28 @@ export default function RootLayout({
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} ${cormorant.variable} antialiased`}>
       <body className="font-sans bg-background text-foreground">
         <AuthProvider>
-          <Suspense fallback={null}>
-            <HashScroll />
-            <SidebarProvider defaultOpen={false}>
-              <div className="flex min-h-screen flex-col w-full">
-                {children}
-              </div>
-              {/* The Cart Sidebar sits on the right */}
-              <CartSidebar />
-            </SidebarProvider>
-            <ShadcnToaster />
-            <SonnerToaster
-              position="bottom-right"
-              toastOptions={{
-                style: {
-                  background: 'white',
-                  border: '1px solid #e5e7eb',
-                },
-              }}
-            />
-          </Suspense>
+          <SessionProvider>
+            <Suspense fallback={null}>
+              <HashScroll />
+              <SidebarProvider defaultOpen={false}>
+                <div className="flex min-h-screen flex-col w-full">
+                  {children}
+                </div>
+                {/* The Cart Sidebar sits on the right */}
+                <CartSidebar />
+              </SidebarProvider>
+              <ShadcnToaster />
+              <SonnerToaster
+                position="bottom-right"
+                toastOptions={{
+                  style: {
+                    background: 'white',
+                    border: '1px solid #e5e7eb',
+                  },
+                }}
+              />
+            </Suspense>
+          </SessionProvider>
         </AuthProvider>
         <Analytics />
       </body>

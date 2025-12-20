@@ -77,9 +77,9 @@ export function OrderStatusTracker({ status, className }: OrderStatusTrackerProp
         <div className={cn('py-4', className)}>
             <div className="flex items-center justify-between">
                 {STATUS_STEPS.map((step, index) => {
-                    // Mark as completed if: before current step, OR current step is delivered
-                    const isCompleted = index < currentIndex || (status === 'delivered' && index === currentIndex)
-                    const isActive = index === currentIndex && status !== 'delivered'
+                    // Mark as completed if: at or before current step
+                    const isCompleted = index <= currentIndex
+                    const isActive = index === currentIndex
                     const statusInfo = ORDER_STATUS_INFO[step]
 
                     return (

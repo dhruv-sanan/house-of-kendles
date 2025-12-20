@@ -20,33 +20,27 @@ import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import { useToast } from "@/hooks/use-toast"
-import { validateCoupon, getAvailableCoupons, getRecommendedItems, type Coupon } from "@/app/_actions/cartActions"
+import { validateCoupon, getAvailableCoupons, type Coupon } from "@/app/_actions/cartActions"
+import { getImpulseRecommendations } from "@/lib/recommendations"
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel"
 import { useSidebar } from "@/components/ui/sidebar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
-
-type RecommendedItem = {
-  id: number
-  slug: string
-  name: string
-  price: number
-  image: string | null
-  variantId: number
-}
+import type { RecommendedProduct } from "@/types/recommendation.types"
 
 export function CartSidebar() {
   const { open, setOpen } = useSidebar()
   const { cart, subtotal, total, discount, setQty, remove, addItem, applyCoupon, appliedCoupon } = useCart()
   const { toast } = useToast()
-  
+
   const [couponCode, setCouponCode] = React.useState("")
   const [coupons, setCoupons] = React.useState<Coupon[]>([])
-  const [recommendations, setRecommendations] = React.useState<RecommendedItem[]>([])
+  const [recommendations, setRecommendations] = React.useState<RecommendedProduct[]>([])
   const [loading, setLoading] = React.useState(false)
   const [carouselApi, setCarouselApi] = React.useState<CarouselApi>()
   const [isOfferOpen, setIsOfferOpen] = React.useState(false)
 
+  // Fetch recommendations when cart opens or cart items change
   React.useEffect(() => {
     if (open) {
       getAvailableCoupons().then(allCoupons => {
@@ -54,9 +48,12 @@ export function CartSidebar() {
         const filtered = allCoupons.filter(c => allowedCodes.includes(c.code))
         setCoupons(filtered)
       })
-      getRecommendedItems().then(setRecommendations)
+
+      // Fetch impulse recommendations, excluding products already in cart
+      const cartProductIds = cart.items.map(item => item.product_id)
+      getImpulseRecommendations(cartProductIds, 8).then(setRecommendations)
     }
-  }, [open])
+  }, [open, cart.items])
 
   const handleApplyCoupon = async (codeToApply: string = couponCode) => {
     if (!codeToApply) return
@@ -94,8 +91,8 @@ export function CartSidebar() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent
-  side="right"
-  className="
+        side="right"
+        className="
     w-[70vw]
     sm:max-w-[400px]
     p-0
@@ -105,41 +102,41 @@ export function CartSidebar() {
     backdrop-blur-xl
     [&>button:first-of-type]:hidden
   "
->
+      >
 
-<SheetHeader className="p-4 border-b bg-white/80 backdrop-blur-md z-10">
-  <div className="flex items-center justify-between">
-    <SheetTitle className="font-heading text-2xl font-semibold text-brand-900">
-      Your Bag
-    </SheetTitle>
+        <SheetHeader className="p-4 border-b bg-white/80 backdrop-blur-md z-10">
+          <div className="flex items-center justify-between">
+            <SheetTitle className="font-heading text-2xl font-semibold text-brand-900">
+              Your Bag
+            </SheetTitle>
 
-    {/* ✅ explicit, visible close button */}
-    <button
-      type="button"
-      onClick={() => setOpen(false)}
-      aria-label="Close cart"
-      className="inline-flex h-8 w-8 items-center justify-center rounded-full
+            {/* ✅ explicit, visible close button */}
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Close cart"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full
                  hover:bg-muted/70 transition-colors"
-    >
-      <X className="h-4 w-4 text-slate-900" />
-    </button>
-  </div>
+            >
+              <X className="h-4 w-4 text-slate-900" />
+            </button>
+          </div>
 
-  <SheetDescription className="text-xs text-muted-foreground text-left">
-    {cart.items.length} items in your cart
-  </SheetDescription>
-</SheetHeader>
+          <SheetDescription className="text-xs text-muted-foreground text-left">
+            {cart.items.length} items in your cart
+          </SheetDescription>
+        </SheetHeader>
 
         {/* ⭐ CHANGED: ScrollArea takes up remaining height and can scroll vertically */}
         <ScrollArea className="flex-1 w-full overflow-y-auto overflow-x-hidden">
           <div className="p-4 pb-5"> {/* ⭐ extra bottom padding so footer doesn’t overlap content */}
-            
+
             {/* 1. Welcome Nudge */}
             {welcomeCoupon && !appliedCoupon && cart.items.length > 0 && (
               <div className="mb-6 bg-white p-4 rounded-xl border border-brand/10 shadow-sm">
                 <div className="mb-2 flex justify-between text-xs items-center">
                   <span className="font-medium text-brand-900 flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5 text-gold fill-gold" /> 
+                    <Sparkles className="h-3.5 w-3.5 text-gold fill-gold" />
                     Unlock 10% Off
                   </span>
                   <span className="text-muted-foreground text-[10px] font-medium">
@@ -187,13 +184,13 @@ export function CartSidebar() {
                       </div>
                       <div className="flex flex-1 flex-col justify-between py-0.5 min-w-0">
                         <div className="flex justify-between items-start gap-2">
-                        <Link
-  href={`/product/${item.slug ?? item.product_id}`} // 👈 use slug if present
-  onClick={() => setOpen(false)}
-  className="font-medium text-sm line-clamp-2 text-brand-900 hover:text-gold transition-colors"
->
-  {item.name}
-</Link>
+                          <Link
+                            href={`/product/${item.slug ?? item.product_id}`} // 👈 use slug if present
+                            onClick={() => setOpen(false)}
+                            className="font-medium text-sm line-clamp-2 text-brand-900 hover:text-gold transition-colors"
+                          >
+                            {item.name}
+                          </Link>
 
                           <div className="text-right shrink-0">
                             {discountedPrice ? (
@@ -213,24 +210,24 @@ export function CartSidebar() {
                           </div>
                         </div>
                         <p className="text-[10px] text-muted-foreground mb-2">{item.size}</p>
-                        
+
                         <div className="flex items-center justify-between">
                           <div className="flex items-center border rounded-lg h-7 bg-surface w-24 justify-between overflow-hidden">
-                            <button 
+                            <button
                               className="px-2.5 h-full flex items-center hover:bg-muted transition-colors"
                               onClick={() => item.qty > 1 ? setQty(item.variant_id, item.qty - 1) : remove(item.variant_id)}
                             >
                               <Minus className="h-3 w-3 text-muted-foreground" />
                             </button>
                             <span className="text-xs text-center font-medium w-6">{item.qty}</span>
-                            <button 
+                            <button
                               className="px-2.5 h-full flex items-center hover:bg-muted transition-colors"
                               onClick={() => setQty(item.variant_id, item.qty + 1)}
                             >
                               <Plus className="h-3 w-3 text-muted-foreground" />
                             </button>
                           </div>
-                          <button 
+                          <button
                             onClick={() => remove(item.variant_id)}
                             className="text-[10px] font-medium text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1"
                           >
@@ -243,93 +240,93 @@ export function CartSidebar() {
                 })}
               </div>
             )}
-{cart.items.length > 0 && <Separator className="my-6 bg-brand/5" />}
+            {cart.items.length > 0 && <Separator className="my-6 bg-brand/5" />}
 
-{/* 3. Recommendations Carousel (Sidebar-safe + tighter on mobile) */}
-{recommendations.length > 0 && cart.items.length > 0 && (
-  <div className="mb-6">
-    <div className="flex items-center justify-between mb-3 px-1">
-      <h4 className="font-medium text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-        <Sparkles className="h-3 w-3 text-gold" /> Pairs Well With
-      </h4>
-      <div className="flex gap-1">
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-6 w-6 rounded-full bg-white border-brand/10 hover:bg-brand/5"
-          onClick={() => carouselApi?.scrollPrev()}
-        >
-          <ChevronLeft className="h-3 w-3" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-6 w-6 rounded-full bg-white border-brand/10 hover:bg-brand/5"
-          onClick={() => carouselApi?.scrollNext()}
-        >
-          <ChevronRight className="h-3 w-3" />
-        </Button>
-      </div>
-    </div>
-
-    {/* 🔧 full width now, no centering / max-width */}
-    <div className="w-full overflow-hidden">
-      <Carousel
-        setApi={setCarouselApi}
-        className="w-full"
-        opts={{ align: "start", slidesToScroll: 1, dragFree: true }}
-      >
-        {/* slightly smaller gap: -ml-1 instead of -ml-2 */}
-        <CarouselContent className="-ml-1">
-          {recommendations.map((rec) => (
-            <CarouselItem
-              key={rec.id}
-              className="pl-1 basis-1/2 flex-none min-w-0"
-            >
-              <div
-                className="group relative flex flex-col gap-2 cursor-pointer rounded-lg bg-white p-2 border border-transparent hover:border-brand/20 hover:shadow-sm transition-all"
-                onClick={() => {
-                  addItem({
-                    variant_id: rec.variantId,
-                    product_id: rec.id,
-                    slug: rec.slug,
-                    name: rec.name,
-                    size: "Standard",
-                    price: rec.price,
-                    image_url: rec.image,
-                    qty: 1,
-                  })
-                  toast({ title: "Added to cart!" })
-                }}
-              >
-                <div className="relative aspect-square w-full overflow-hidden rounded-md bg-muted">
-                  <Image
-                    src={rec.image || "/placeholder.png"}
-                    alt={rec.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
-                  <div className="absolute bottom-1 right-1 bg-white/90 backdrop-blur-sm rounded-full p-1 shadow-sm opacity-0 translate-y-2 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                    <Plus className="h-3 w-3 text-brand-900" />
+            {/* 3. Recommendations Carousel (Sidebar-safe + tighter on mobile) */}
+            {recommendations.length > 0 && cart.items.length > 0 && (
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-3 px-1">
+                  <h4 className="font-medium text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                    <Sparkles className="h-3 w-3 text-gold" /> Pairs Well With
+                  </h4>
+                  <div className="flex gap-1">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-6 w-6 rounded-full bg-white border-brand/10 hover:bg-brand/5"
+                      onClick={() => carouselApi?.scrollPrev()}
+                    >
+                      <ChevronLeft className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-6 w-6 rounded-full bg-white border-brand/10 hover:bg-brand/5"
+                      onClick={() => carouselApi?.scrollNext()}
+                    >
+                      <ChevronRight className="h-3 w-3" />
+                    </Button>
                   </div>
                 </div>
-                <div>
-                  <h5 className="text-[10px] font-medium line-clamp-2 leading-tight text-brand-900">
-                    {rec.name}
-                  </h5>
-                  <span className="text-[10px] text-muted-foreground font-medium">
-                    ₹{rec.price}
-                  </span>
+
+                {/* 🔧 full width now, no centering / max-width */}
+                <div className="w-full overflow-hidden">
+                  <Carousel
+                    setApi={setCarouselApi}
+                    className="w-full"
+                    opts={{ align: "start", slidesToScroll: 1, dragFree: true }}
+                  >
+                    {/* slightly smaller gap: -ml-1 instead of -ml-2 */}
+                    <CarouselContent className="-ml-1">
+                      {recommendations.map((rec) => (
+                        <CarouselItem
+                          key={rec.id}
+                          className="pl-1 basis-1/2 flex-none min-w-0"
+                        >
+                          <div
+                            className="group relative flex flex-col gap-2 cursor-pointer rounded-lg bg-white p-2 border border-transparent hover:border-brand/20 hover:shadow-sm transition-all"
+                            onClick={() => {
+                              addItem({
+                                variant_id: rec.variantId,
+                                product_id: rec.id,
+                                slug: rec.slug,
+                                name: rec.name,
+                                size: rec.size || rec.flavor || "Standard",
+                                price: rec.price,
+                                image_url: rec.image,
+                                qty: 1,
+                              })
+                              toast({ title: "Added to cart!" })
+                            }}
+                          >
+                            <div className="relative aspect-square w-full overflow-hidden rounded-md bg-muted">
+                              <Image
+                                src={rec.image || "/placeholder.png"}
+                                alt={rec.name}
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                              />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
+                              <div className="absolute bottom-1 right-1 bg-white/90 backdrop-blur-sm rounded-full p-1 shadow-sm opacity-0 translate-y-2 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                                <Plus className="h-3 w-3 text-brand-900" />
+                              </div>
+                            </div>
+                            <div>
+                              <h5 className="text-[10px] font-medium line-clamp-2 leading-tight text-brand-900">
+                                {rec.name}
+                              </h5>
+                              <span className="text-[10px] text-muted-foreground font-medium">
+                                ₹{rec.price}
+                              </span>
+                            </div>
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                  </Carousel>
                 </div>
               </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
-    </div>
-  </div>
-)}
+            )}
 
             {cart.items.length > 0 && <Separator className="my-6 bg-brand/5" />}
 
@@ -339,13 +336,13 @@ export function CartSidebar() {
                 <p className="text-sm font-medium text-brand-900 mb-3 flex items-center gap-2">
                   <TicketPercent className="h-4 w-4" /> Discounts
                 </p>
-                
+
                 {!appliedCoupon ? (
                   <div className="flex gap-2">
                     <div className="relative flex-1">
-                      <Input 
-                        placeholder="Discount Code" 
-                        value={couponCode} 
+                      <Input
+                        placeholder="Discount Code"
+                        value={couponCode}
                         onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                         className="uppercase h-10 text-xs font-mono bg-white pr-20 border-dashed focus-visible:border-solid"
                       />
@@ -394,10 +391,10 @@ export function CartSidebar() {
                         </Popover>
                       )}
                     </div>
-                    <Button 
-                      size="sm" 
-                      onClick={() => handleApplyCoupon()} 
-                      disabled={loading || !couponCode} 
+                    <Button
+                      size="sm"
+                      onClick={() => handleApplyCoupon()}
+                      disabled={loading || !couponCode}
                       className="h-10 px-4 bg-brand-900 text-white hover:bg-brand-900/90 shrink-0"
                     >
                       {loading ? "..." : "Apply"}
@@ -413,10 +410,10 @@ export function CartSidebar() {
                         Discount Applied Successfully
                       </span>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={removeCoupon} 
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={removeCoupon}
                       className="h-7 px-2 text-green-700 hover:text-red-600 hover:bg-green-100"
                     >
                       Remove
@@ -447,7 +444,7 @@ export function CartSidebar() {
                 <span className="font-heading text-2xl font-bold text-brand-900">₹{total.toFixed(0)}</span>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-3 w-full">
               <Button
                 variant="outline"

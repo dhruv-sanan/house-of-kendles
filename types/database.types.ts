@@ -267,6 +267,48 @@ export type Database = {
           },
         ]
       }
+      product_recommendations: {
+        Row: {
+          created_at: string | null
+          display_order: number | null
+          id: number
+          recommendation_type: string
+          recommended_product_id: number
+          source_product_id: number
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number | null
+          id?: number
+          recommendation_type: string
+          recommended_product_id: number
+          source_product_id: number
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number | null
+          id?: number
+          recommendation_type?: string
+          recommended_product_id?: number
+          source_product_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_recommendations_recommended_product_id_fkey"
+            columns: ["recommended_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_recommendations_source_product_id_fkey"
+            columns: ["source_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_variants: {
         Row: {
           flavor: string | null
@@ -418,6 +460,67 @@ export type Database = {
           unit_of_measure?: string
         }
         Relationships: []
+      }
+      recommendation_clicks: {
+        Row: {
+          added_at: string | null
+          added_to_cart: boolean | null
+          click_location: string
+          clicked_at: string | null
+          id: number
+          recommended_product_id: number
+          recommended_variant_id: number | null
+          session_id: string
+          source_page_url: string | null
+          source_product_id: number | null
+        }
+        Insert: {
+          added_at?: string | null
+          added_to_cart?: boolean | null
+          click_location: string
+          clicked_at?: string | null
+          id?: number
+          recommended_product_id: number
+          recommended_variant_id?: number | null
+          session_id: string
+          source_page_url?: string | null
+          source_product_id?: number | null
+        }
+        Update: {
+          added_at?: string | null
+          added_to_cart?: boolean | null
+          click_location?: string
+          clicked_at?: string | null
+          id?: number
+          recommended_product_id?: number
+          recommended_variant_id?: number | null
+          session_id?: string
+          source_page_url?: string | null
+          source_product_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recommendation_clicks_recommended_product_id_fkey"
+            columns: ["recommended_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recommendation_clicks_recommended_variant_id_fkey"
+            columns: ["recommended_variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recommendation_clicks_source_product_id_fkey"
+            columns: ["source_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       vendors: {
         Row: {

@@ -16,7 +16,7 @@ export function SiteFooter() {
             <a href="#" className="text-white/60 hover:text-gold transition-colors"><Facebook className="w-5 h-5" /></a>
           </div>
         </div>
-        
+
         <div>
           <h5 className="font-medium text-gold tracking-widest text-sm uppercase mb-6">Shop</h5>
           <ul className="space-y-4 text-sm text-white/70">
@@ -41,9 +41,9 @@ export function SiteFooter() {
           <h5 className="font-medium text-gold tracking-widest text-sm uppercase mb-6">Stay in the Know</h5>
           <p className="text-white/70 text-sm mb-4">Subscribe for exclusive offers and new launches.</p>
           <form className="flex gap-2">
-            <input 
-              type="email" 
-              placeholder="Your email" 
+            <input
+              type="email"
+              placeholder="Your email"
               className="bg-white/10 border border-white/20 rounded px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-gold w-full"
             />
             <button className="bg-gold text-brand-900 px-4 py-2 rounded text-sm font-medium hover:bg-white transition-colors">
@@ -52,12 +52,12 @@ export function SiteFooter() {
           </form>
         </div>
       </div>
-      
+
       <div className="mx-auto max-w-7xl px-6 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/40">
         <p>© {new Date().getFullYear()} House of Kendles. All rights reserved.</p>
         <div className="flex gap-6">
-          <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-          <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
+          <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+          <Link href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
         </div>
       </div>
     </footer>
