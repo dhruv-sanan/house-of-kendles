@@ -11,6 +11,7 @@ import { createClient } from '@/utils/supabase/client'
 import type { AuthContextValue, AuthUser } from '@/types/auth.types'
 import type { Tables } from '@/types/database.types'
 import { useRouter } from 'next/navigation'
+import { signOutAction } from '@/app/_actions/auth'
 
 /**
  * Auth context providing user and customer state throughout the app
@@ -23,29 +24,6 @@ interface AuthProviderProps {
 
 /**
  * Auth Provider component that wraps the app and provides auth state
- * 
- * Features:
- * - Listens to Supabase auth state changes
- * - Fetches customer record when user signs in
- * - Provides signOut function
- * 
- * @example
- * ```tsx
- * // In app/layout.tsx
- * import { AuthProvider } from '@/providers/auth-provider'
- * 
- * export default function RootLayout({ children }) {
- *   return (
- *     <html>
- *       <body>
- *         <AuthProvider>
- *           {children}
- *         </AuthProvider>
- *       </body>
- *     </html>
- *   )
- * }
- * ```
  */
 export function AuthProvider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<AuthUser | null>(null)
@@ -88,15 +66,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
      */
     const signOut = useCallback(async () => {
         try {
-            const supabase = createClient()
-            await supabase.auth.signOut()
+            // Optimistically clear local state immediately so UI updates
+            setUser(null)
+            setCustomer(null)
+
+            // Use Server Action to clear cookies and redirect
+            await signOutAction()
+        } catch (error) {
+            console.error('Error signing out:', error)
+            // Even if server sign out fails, we want to clear local state
             setUser(null)
             setCustomer(null)
             router.push('/')
-            router.refresh()
-        } catch (error) {
-            console.error('Error signing out:', error)
-            throw error
         }
     }, [router])
 
