@@ -51,7 +51,7 @@ export function AddKitToCartButton({ product }: AddKitToCartButtonProps) {
       name: productToAdd.name,
       size: "Standard",
       price: productToAdd.price,
-      image_url: productToAdd.image_url || "/placeholder.png",
+      image_url: productToAdd.image_url || "https://res.cloudinary.com/dq077uui5/image/upload/v1766345243/House_of-2_page-0001_pzag8s.jpg",
     })
 
     setIsAdding(false)

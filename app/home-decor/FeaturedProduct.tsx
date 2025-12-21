@@ -13,7 +13,7 @@ export function FeaturedProduct({ product, orientation = "left" }: FeaturedProdu
   const variant = product.variants[0]
   if (!variant) return null
 
-  const imageUrl = variant.image_url || product.image_url || "/placeholder.png"
+  const imageUrl = variant.image_url || product.image_url || "https://res.cloudinary.com/dq077uui5/image/upload/v1766345243/House_of-2_page-0001_pzag8s.jpg"
 
   const imageContent = (
     <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg shadow-lg">
@@ -44,11 +44,9 @@ export function FeaturedProduct({ product, orientation = "left" }: FeaturedProdu
         </li>
       </ul>
       <div className="mt-6">
-        <Link href={`/product/${product.slug}`}>
-          <Button size="lg" className="bg-brand text-primary-foreground hover:bg-brand-900">
-            Shop Now
-          </Button>
-        </Link>
+        <Button size="lg" className="bg-brand text-primary-foreground hover:bg-brand-900 pointer-events-none">
+          Shop Now
+        </Button>
       </div>
     </div>
   )

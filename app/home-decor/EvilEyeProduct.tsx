@@ -22,14 +22,14 @@ export function EvilEyeProductClient({ product }: { product: ProductWithVariants
       id: v.id,
       name: v.size, // Using 'size' field for stand name
       price: v.price,
-      image: v.image_url || product.image_url || "/placeholder.png",
+      image: v.image_url || product.image_url || "https://res.cloudinary.com/dq077uui5/image/upload/v1766345243/House_of-2_page-0001_pzag8s.jpg",
       stock: v.stock_quantity
     }))
     const selectedVariant = product.variants.find(v => v.id === selectedVariantId)
     return { selectedVariant, stands }
   }, [product.variants, selectedVariantId])
 
-  const currentImage = selectedVariant?.image_url || product.image_url || "/placeholder.png"
+  const currentImage = selectedVariant?.image_url || product.image_url || "https://res.cloudinary.com/dq077uui5/image/upload/v1766345243/House_of-2_page-0001_pzag8s.jpg"
 
   const handleAddToCart = () => {
     if (!selectedVariant) return

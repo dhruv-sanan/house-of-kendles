@@ -11,6 +11,9 @@ import Link from "next/link"
 import Image from "next/image"
 import { Minus, Plus, Trash2, Tag, ArrowRight, ShoppingBag, Check, ChevronLeft, ChevronRight, Sparkles } from "lucide-react"
 import { validateCoupon, getAvailableCoupons, type Coupon } from "@/app/_actions/cartActions"
+import { StickyBottomBar } from "@/components/shared/StickyBottomBar"
+import { useRouter } from "next/navigation"
+import { useRef } from "react"
 import { getImpulseRecommendations } from "@/lib/recommendations"
 import { useToast } from "@/hooks/use-toast"
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel"
@@ -24,6 +27,8 @@ export default function CartPage() {
   const { cart, total, subtotal, discount, setQty, remove, applyCoupon, appliedCoupon, addItem } = useCart()
   const { sessionId } = useSession()
   const { toast } = useToast()
+  const router = useRouter()
+  const checkoutButtonRef = useRef<HTMLDivElement>(null)
 
   const [couponInput, setCouponInput] = useState("")
   const [isValidating, setIsValidating] = useState(false)
@@ -78,7 +83,7 @@ export default function CartPage() {
     <>
       <SiteHeader />
       <main className="min-h-[80vh] bg-surface py-10 px-4 md:px-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-32">
           <h1 className="font-heading text-4xl mb-8 text-brand-900">Shopping Cart</h1>
 
           {cart.items.length === 0 ? (
@@ -106,7 +111,7 @@ export default function CartPage() {
                         <div key={item.variant_id} className="flex gap-4 md:gap-6 group">
                           <div className="relative h-24 w-24 md:h-32 md:w-32 shrink-0 overflow-hidden rounded-lg bg-muted border">
                             <Image
-                              src={item.image_url || "/placeholder.png"}
+                              src={item.image_url || "https://res.cloudinary.com/dq077uui5/image/upload/v1766345243/House_of-2_page-0001_pzag8s.jpg"}
                               alt={item.name}
                               fill
                               className="object-cover"
@@ -212,7 +217,7 @@ export default function CartPage() {
                                 toast({ title: "Added to cart!" })
                               }}>
                               <div className="relative aspect-square bg-muted rounded-lg mb-3 overflow-hidden">
-                                <Image src={rec.image || "/placeholder.png"} alt={rec.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                                <Image src={rec.image || "https://res.cloudinary.com/dq077uui5/image/upload/v1766345243/House_of-2_page-0001_pzag8s.jpg"} alt={rec.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                                 <div className="absolute bottom-2 right-2 bg-white rounded-full p-1.5 shadow-md opacity-0 translate-y-2 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
                                   <Plus className="h-4 w-4 text-brand-900" />
                                 </div>
@@ -322,11 +327,11 @@ export default function CartPage() {
                     <span className="font-heading text-3xl text-brand-900">₹{total.toFixed(0)}</span>
                   </div>
 
-                  <Link href="/checkout">
-                    <Button size="lg" className="w-full bg-brand text-white hover:bg-brand-900 text-lg h-14 shadow-md">
+                  <div ref={checkoutButtonRef}>
+                    <Button size="lg" className="w-full bg-brand text-white hover:bg-brand-900 text-lg h-14 shadow-md" onClick={() => router.push('/checkout')}>
                       Checkout <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
-                  </Link>
+                  </div>
 
                   <div className="mt-6 flex items-center justify-center gap-2 text-xs text-muted-foreground">
                     <Check className="h-3 w-3" /> Secure Checkout
@@ -337,6 +342,13 @@ export default function CartPage() {
             </div>
           )}
         </div>
+        <StickyBottomBar
+          triggerRef={checkoutButtonRef}
+          total={total}
+          actionLabel="Checkout"
+          onAction={() => router.push('/checkout')}
+          shippingText="Total (excl. shipping)"
+        />
       </main>
       <SiteFooter />
     </>

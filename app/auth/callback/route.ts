@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 
             if (session?.user) {
                 const user = session.user
-                console.log('[Auth Callback] User authenticated:', user.id)
+
 
                 // Check if customer already exists for this user
                 const { data: existingCustomer, error: fetchError } = await supabase
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
                         'Customer'
                     const userEmail = user.email || ''
 
-                    console.log('[Auth Callback] Creating customer for:', userName, userEmail)
+
 
                     const { data: newCustomer, error: createError } = await supabase
                         .from('customers')
@@ -65,10 +65,10 @@ export async function GET(request: NextRequest) {
                         console.error('[Auth Callback] Error creating customer:', createError)
                         // Don't fail auth - customer can be created later during checkout
                     } else {
-                        console.log('[Auth Callback] Customer created:', newCustomer?.id)
+
                     }
                 } else {
-                    console.log('[Auth Callback] Customer already exists:', existingCustomer.id)
+
                 }
             }
 

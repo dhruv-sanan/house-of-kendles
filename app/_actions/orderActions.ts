@@ -182,7 +182,7 @@ export async function createOrder(cartItems: CartItem[], formData: FormData) {
 
 export async function updateOrderStatus(orderId: number, newStatus: string) {
   const supabase = await createClient()
-  console.log('[Admin] Updating order status:', orderId, 'to', newStatus)
+
 
   const { data, error } = await supabase
     .from("orders")
@@ -196,7 +196,7 @@ export async function updateOrderStatus(orderId: number, newStatus: string) {
     return { success: false, error: `Failed to update status: ${error.message}` }
   }
 
-  console.log('[Admin] Order status updated:', data)
+
   revalidatePath("/admin/orders")
   revalidatePath(`/order/${orderId}`)
   return { success: true, data }
@@ -230,10 +230,7 @@ export async function getOrders() {
     return []
   }
 
-  // Debug log to check raw data structure for the first order
-  if (data && data.length > 0) {
-    console.log('[getOrders Debug] First row raw:', JSON.stringify(data[0], null, 2))
-  }
+
 
   return data.map(order => {
     const customer = Array.isArray(order.customers) ? order.customers[0] : order.customers
@@ -243,7 +240,7 @@ export async function getOrders() {
     if (deliveryAddress) {
       formattedAddress = `${deliveryAddress.street}, ${deliveryAddress.city}, ${deliveryAddress.state} ${deliveryAddress.zip_code}`
     } else {
-      console.log(`[getOrders Debug] No delivery address found for ${order.order_uid}. Customer address:`, customer?.address)
+
     }
 
     return {

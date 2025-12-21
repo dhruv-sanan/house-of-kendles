@@ -106,35 +106,35 @@ export function MainNav() {
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <Link href="/bath-salt" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+          <NavigationMenuLink asChild>
+            <Link href="/bath-salt" className={navigationMenuTriggerStyle()}>
               Bath Salt
-            </NavigationMenuLink>
-          </Link>
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <Link href="/gifting" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+          <NavigationMenuLink asChild>
+            <Link href="/gifting" className={navigationMenuTriggerStyle()}>
               Gifting
-            </NavigationMenuLink>
-          </Link>
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <Link href="/our-story" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+          <NavigationMenuLink asChild>
+            <Link href="/our-story" className={navigationMenuTriggerStyle()}>
               Our Story
-            </NavigationMenuLink>
-          </Link>
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <Link href="/quiz" legacyBehavior passHref>
-            <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "text-gold font-semibold")}>
+          <NavigationMenuLink asChild>
+            <Link href="/quiz" className={cn(navigationMenuTriggerStyle(), "text-gold font-semibold")}>
               Find Your Scent
-            </NavigationMenuLink>
-          </Link>
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
 
       </NavigationMenuList>

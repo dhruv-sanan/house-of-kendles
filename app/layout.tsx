@@ -38,8 +38,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} ${cormorant.variable} antialiased`}>
-      <body className="font-sans bg-background text-foreground">
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} ${cormorant.variable} antialiased`} suppressHydrationWarning>
+      <body className="font-sans bg-background text-foreground" suppressHydrationWarning>
         <AuthProvider>
           <SessionProvider>
             <Suspense fallback={null}>

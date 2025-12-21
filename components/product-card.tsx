@@ -26,7 +26,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
   const { lowestPrice, hasMultipleVariants, singleVariant, defaultImageUrl } = useMemo(() => {
     if (!product.variants || product.variants.length === 0) {
-      return { lowestPrice: 0, hasMultipleVariants: false, singleVariant: null, defaultImageUrl: "/placeholder.png" }
+      return { lowestPrice: 0, hasMultipleVariants: false, singleVariant: null, defaultImageUrl: "https://res.cloudinary.com/dq077uui5/image/upload/v1766345243/House_of-2_page-0001_pzag8s.jpg" }
     }
     const prices = product.variants.map(v => v.price)
     const firstVariant = product.variants[0];
@@ -35,7 +35,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
       lowestPrice: Math.min(...prices),
       hasMultipleVariants: product.variants.length > 1,
       singleVariant: product.variants.length === 1 ? firstVariant : null,
-      defaultImageUrl: firstVariant.image_url || product.image_url || "/placeholder.png"
+      defaultImageUrl: firstVariant.image_url || product.image_url || "https://res.cloudinary.com/dq077uui5/image/upload/v1766345243/House_of-2_page-0001_pzag8s.jpg"
     }
   }, [product.variants, product.image_url])
 

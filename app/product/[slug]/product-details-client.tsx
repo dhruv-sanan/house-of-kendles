@@ -91,7 +91,7 @@ export function ProductDetailsClient({ product, isAdmin }: { product: ProductWit
       selectedVariant.image_urls.forEach(url => addImage(url, 'gallery', true))
     }
 
-    if (images.length === 0) addImage("/placeholder.png", 'product', false)
+    if (images.length === 0) addImage("https://res.cloudinary.com/dq077uui5/image/upload/v1766345243/House_of-2_page-0001_pzag8s.jpg", 'product', false)
 
     return images
   }, [selectedVariant, product.image_url])

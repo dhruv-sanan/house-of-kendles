@@ -34,7 +34,7 @@ export function OrderDetailsModal({ items }: { items: OrderItem[] }) {
               <li key={index} className="flex items-center gap-4">
                 <div className="h-16 w-16 shrink-0 rounded-md bg-muted flex items-center justify-center">
                   <img
-                    src={item.product_variants?.image_url ?? '/placeholder.png'}
+                    src={item.product_variants?.image_url ?? 'https://res.cloudinary.com/dq077uui5/image/upload/v1766345243/House_of-2_page-0001_pzag8s.jpg'}
                     alt={item.product_variants?.products?.name ?? 'Product'}
                     className="h-full w-full object-cover rounded-md"
                   />

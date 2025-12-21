@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useTransition, useCallback } from 'react'
+import { useState, useEffect, useTransition, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/footer'
@@ -19,12 +19,15 @@ import { Tag, Loader2, MapPin, ChevronDown, ShoppingBag } from 'lucide-react'
 import type { Address } from '@/types/address.types'
 import Link from 'next/link'
 import Image from 'next/image'
+import { StickyBottomBar } from '@/components/shared/StickyBottomBar'
 
 export default function CheckoutPage() {
   const { cart, total, subtotal, discount, appliedCoupon, clear } = useCart()
   const { user, customer, loading: authLoading } = useAuth()
   const router = useRouter()
+
   const [isPending, startTransition] = useTransition()
+  const placeOrderButtonRef = useRef<HTMLDivElement>(null)
 
   // Address state
   const [addresses, setAddresses] = useState<Address[]>([])
@@ -77,7 +80,6 @@ export default function CheckoutPage() {
         setUseManualAddress(true)
       }
     } catch (error) {
-      console.error('Error fetching addresses:', error)
       setUseManualAddress(true)
     } finally {
       setIsLoadingAddresses(false)
@@ -95,7 +97,6 @@ export default function CheckoutPage() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (isLoadingAddresses) {
-        console.warn('Address loading timeout - showing manual entry')
         setIsLoadingAddresses(false)
         setUseManualAddress(true)
       }
@@ -112,7 +113,6 @@ export default function CheckoutPage() {
       try {
         const customerData = await getCustomerData()
         if (customerData?.phone) {
-          console.log('[Checkout] Prefilling phone from customer:', customerData.phone)
           setPhone(customerData.phone)
         }
       } catch (error) {
@@ -159,7 +159,6 @@ export default function CheckoutPage() {
   }
 
   const handlePlaceOrder = async (formData: FormData) => {
-    console.log('[Checkout] Place order clicked')
 
     if (phone.length !== 10) {
       setPhoneError('Please enter a valid 10-digit mobile number')
@@ -169,20 +168,14 @@ export default function CheckoutPage() {
 
     startTransition(async () => {
       try {
-        console.log('[Checkout] Starting order placement')
-        console.log('[Checkout] Use manual address:', useManualAddress)
-        console.log('[Checkout] Selected address ID:', selectedAddressId)
-
         let addressIdToUse = selectedAddressId
 
         // If using manual address entry, create the address first
         if (useManualAddress && user) {
-          console.log('[Checkout] Creating new address from manual entry')
 
           const street = formData.get('address') as string
           const manualPincode = formData.get('pincode') as string
 
-          console.log('[Checkout] Address data:', { street, city, state, manualPincode })
 
           if (!street || !city || !state || !manualPincode) {
             const missing = []
@@ -192,22 +185,11 @@ export default function CheckoutPage() {
             if (!manualPincode) missing.push('pincode')
 
             const errorMsg = `Please fill in: ${missing.join(', ')}`
-            console.error('[Checkout] Missing address fields:', missing)
             toast.error(errorMsg)
             return
           }
 
           try {
-            console.log('[Checkout] Creating address via server action')
-            console.log('[Checkout] Address data:', {
-              street: street,
-              city: city,
-              state: state,
-              zip_code: manualPincode,
-              label: 'home',
-              is_default: addresses.length === 0,
-            })
-
             const result = await addAddress({
               street: street,
               city: city,
@@ -217,18 +199,14 @@ export default function CheckoutPage() {
               is_default: addresses.length === 0,
             })
 
-            console.log('[Checkout] addAddress result:', result)
 
             if (!result.success || !result.address) {
-              console.error('[Checkout] Address creation failed:', result.error)
               toast.error(result.error || 'Failed to save address')
               return
             }
 
             addressIdToUse = result.address.id
-            console.log('[Checkout] Address created successfully:', result.address.id)
           } catch (error) {
-            console.error('[Checkout] Exception creating address:', error)
             toast.error('Failed to save delivery address. Please try again.')
             return
           }
@@ -237,26 +215,18 @@ export default function CheckoutPage() {
         // Add delivery address ID to form data
         if (addressIdToUse) {
           formData.set('delivery_address_id', addressIdToUse)
-          console.log('[Checkout] Using address ID:', addressIdToUse)
-        } else {
-          console.warn('[Checkout] No address ID available')
         }
 
-        console.log('[Checkout] Calling createOrderFromCart')
         const result = await createOrderFromCart(cart.items, formData)
-        console.log('[Checkout] Order creation result:', result)
 
         if (result.success && result.orderUid) {
-          console.log('[Checkout] Order placed successfully:', result.orderUid)
           clear()
           toast.success('Order placed successfully!')
           router.push(`/order/${result.orderUid}?placed=true`)
         } else {
-          console.error('[Checkout] Order creation failed:', result.error)
           toast.error(result.error || 'Failed to place order. Please try again.')
         }
       } catch (error) {
-        console.error('[Checkout] Unexpected error in handlePlaceOrder:', error)
         toast.error('An unexpected error occurred. Please try again.')
       }
     })
@@ -288,18 +258,18 @@ export default function CheckoutPage() {
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto max-w-4xl px-4 py-10 min-h-screen">
+      <main className="mx-auto max-w-4xl px-4 py-10 pb-32 min-h-screen">
         <h1 className="font-heading text-3xl text-brand-900 mb-8">Checkout</h1>
 
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Main Form */}
           <div className="lg:col-span-2">
-            <form className="space-y-8" action={handlePlaceOrder}>
+            <form id="checkout-form" className="space-y-8" action={handlePlaceOrder}>
               {/* Hidden Fields */}
               <input type="hidden" name="couponCode" value={appliedCoupon?.code || ''} />
 
               {/* Contact Information */}
-              <section className="rounded-xl border border-brand/10 bg-white p-6 space-y-4">
+              <section className="rounded-xl border border-brand/10 bg-white p-4 sm:p-6 space-y-4">
                 <h2 className="text-lg font-semibold text-brand-900">Contact Information</h2>
 
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -345,7 +315,7 @@ export default function CheckoutPage() {
               </section>
 
               {/* Delivery Address */}
-              <section className="rounded-xl border border-brand/10 bg-white p-6 space-y-4">
+              <section className="rounded-xl border border-brand/10 bg-white p-4 sm:p-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-semibold text-brand-900">Delivery Address</h2>
                   {user && addresses.length > 0 && (
@@ -381,7 +351,7 @@ export default function CheckoutPage() {
                 ) : (
                   // Manual address entry
                   <div className="space-y-4">
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div>
                         <Label htmlFor="pincode">Pincode</Label>
                         <div className="relative">
@@ -449,7 +419,7 @@ export default function CheckoutPage() {
               </section>
 
               {/* Gifting Options */}
-              <section className="rounded-xl border border-brand/10 bg-white p-6 space-y-4">
+              <section className="rounded-xl border border-brand/10 bg-white p-4 sm:p-6 space-y-4">
                 <h2 className="text-lg font-semibold text-brand-900">Gifting Options</h2>
 
                 <div>
@@ -476,29 +446,13 @@ export default function CheckoutPage() {
                 </label>
               </section>
 
-              {/* Submit Button (Mobile) */}
-              <div className="lg:hidden">
-                <Button
-                  type="submit"
-                  disabled={isPending || cart.items.length === 0}
-                  className="w-full h-14 text-lg bg-brand-900 text-white hover:bg-brand"
-                >
-                  {isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Placing Order...
-                    </>
-                  ) : (
-                    `Place Order • ₹${total}`
-                  )}
-                </Button>
-              </div>
+
             </form>
           </div>
 
           {/* Order Summary Sidebar */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 rounded-xl border border-brand/10 bg-white p-6 space-y-4">
+            <div className="sticky top-24 rounded-xl border border-brand/10 bg-white p-4 sm:p-6 space-y-4">
               <h2 className="text-lg font-semibold text-brand-900">Order Summary</h2>
 
               {/* Cart Items Preview */}
@@ -554,31 +508,61 @@ export default function CheckoutPage() {
               </div>
 
               {/* Submit Button (Desktop) */}
-              <div className="hidden lg:block pt-2">
-                <Button
-                  type="submit"
-                  form="checkout-form"
-                  disabled={isPending || cart.items.length === 0}
-                  onClick={() => {
-                    const form = document.querySelector('form')
-                    if (form) form.requestSubmit()
-                  }}
-                  className="w-full h-12 bg-brand-900 text-white hover:bg-brand"
-                >
-                  {isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Placing Order...
-                    </>
-                  ) : (
-                    'Place Order'
-                  )}
-                </Button>
+              <div ref={placeOrderButtonRef}>
+                <div className="hidden lg:block pt-2">
+                  <Button
+                    type="submit"
+                    form="checkout-form"
+                    disabled={isPending || cart.items.length === 0}
+                    onClick={() => {
+                      const form = document.getElementById('checkout-form') as HTMLFormElement
+                      if (form) form.requestSubmit()
+                    }}
+                    className="w-full h-12 bg-brand-900 text-white hover:bg-brand"
+                  >
+                    {isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Placing Order...
+                      </>
+                    ) : (
+                      'Place Order'
+                    )}
+                  </Button>
+                </div>
+                {/* Mobile placeholder to maintain layout flow if needed, though hidden on mobile primarily by parent div classes in original code */}
+                <div className="lg:hidden">
+                  {/* The original mobile button which we will use as trigger reference */}
+                  <Button
+                    type="submit"
+                    disabled={isPending || cart.items.length === 0}
+                    className="w-full h-14 text-lg bg-brand-900 text-white hover:bg-brand"
+                  >
+                    {isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Placing Order...
+                      </>
+                    ) : (
+                      `Place Order • ₹${total}`
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </main>
+
+      <StickyBottomBar
+        triggerRef={placeOrderButtonRef}
+        total={total}
+        actionLabel="Place Order"
+        isPending={isPending}
+        disabled={isPending || cart.items.length === 0}
+        formId="checkout-form"
+        shippingText="Total"
+      />
 
       {/* Address Selection Modal */}
       <AddressSelectionModal

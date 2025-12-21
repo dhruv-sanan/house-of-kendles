@@ -128,7 +128,7 @@ export async function createOrderFromCart(
 
         if (user) {
             // Authenticated user - use their customer record
-            console.log('[Order] Looking up customer for user:', user.id)
+
 
             const { data: customer, error: customerFetchError } = await supabase
                 .from('customers')
@@ -142,7 +142,7 @@ export async function createOrderFromCart(
             }
 
             if (customer) {
-                console.log('[Order] Found existing customer:', customer.id)
+
                 customerId = customer.id
 
                 // Update customer info with checkout details (phone, etc.)
@@ -155,7 +155,7 @@ export async function createOrderFromCart(
                 }
 
                 if (Object.keys(updateData).length > 0) {
-                    console.log('[Order] Updating customer with:', updateData)
+
                     const { error: updateError } = await supabase
                         .from('customers')
                         .update(updateData)
@@ -168,7 +168,6 @@ export async function createOrderFromCart(
                 }
             } else {
                 // Customer doesn't exist - create one (shouldn't happen if auth callback worked)
-                console.log('[Order] No customer found, creating new one')
                 const { data: newCustomer, error: customerError } = await supabase
                     .from('customers')
                     .insert({
@@ -189,7 +188,7 @@ export async function createOrderFromCart(
                     return { success: false, error: 'Could not create customer record: No data returned' }
                 }
 
-                console.log('[Order] Created new customer:', newCustomer.id)
+
                 customerId = newCustomer.id
             }
         } else {
@@ -199,11 +198,10 @@ export async function createOrderFromCart(
 
         // Generate unique order UID first (before insert)
         const uniqueOrderUid = await generateUniqueOrderId(supabase)
-        console.log('[Order] Generated UID:', uniqueOrderUid)
+
 
         // Create order with order_uid included
-        console.log('[Order] Creating order with customer_id:', customerId)
-        console.log('[Order] Delivery address ID:', orderData.delivery_address_id)
+
 
         const { data: order, error: orderError } = await supabase
             .from('orders')
@@ -228,10 +226,9 @@ export async function createOrderFromCart(
             return { success: false, error: 'Could not create order: No data returned' }
         }
 
-        console.log('[Order] Order created with ID:', order.id, 'UID:', order.order_uid)
+
 
         // Add order items
-        console.log('[Order] Adding', cartItems.length, 'order items')
         const orderItems = cartItems.map((item) => ({
             order_id: order.id,
             product_id: item.product_id,
@@ -250,7 +247,6 @@ export async function createOrderFromCart(
         }
 
         // Decrement stock
-        console.log('[Order] Decrementing stock')
         for (const item of cartItems) {
             const { error: stockError } = await supabase.rpc('decrement_stock', {
                 variant_id_to_update: item.variant_id,
@@ -263,7 +259,7 @@ export async function createOrderFromCart(
             }
         }
 
-        console.log('[Order] Order creation complete:', uniqueOrderUid)
+
 
         revalidatePath(`/order/${uniqueOrderUid}`)
         revalidatePath('/orders')

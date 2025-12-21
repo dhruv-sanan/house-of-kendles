@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
 
   // --- ADMIN ROUTES: Keep existing JWT-based auth ---
   if (pathname.startsWith('/admin')) {
-    console.log(`\n[Middleware] Admin route triggered for path: ${pathname}`)
+
 
     const jwtSecret = process.env.JWT_SECRET
     if (!jwtSecret) {
@@ -38,17 +38,14 @@ export async function middleware(request: NextRequest) {
 
     const token = request.cookies.get('auth_token')?.value
     if (!token) {
-      console.log('[Middleware] No admin token found. Redirecting to login.')
       return NextResponse.redirect(new URL('/admin/login', request.url))
     }
 
     try {
       const secret = new TextEncoder().encode(jwtSecret)
       await jwtVerify(token, secret)
-      console.log('[Middleware] Admin token verified successfully.')
       return NextResponse.next()
     } catch {
-      console.log('[Middleware] Admin token verification failed. Redirecting to login.')
       const response = NextResponse.redirect(new URL('/admin/login', request.url))
       response.cookies.delete('auth_token')
       return response
@@ -67,7 +64,6 @@ export async function middleware(request: NextRequest) {
       // Store the intended URL and redirect to sign-in
       const signInUrl = new URL('/sign-in', request.url)
       signInUrl.searchParams.set('redirect', pathname)
-      console.log(`[Middleware] No user for protected route ${pathname}, redirecting to sign-in`)
       return NextResponse.redirect(signInUrl)
     }
   }
@@ -76,7 +72,6 @@ export async function middleware(request: NextRequest) {
   // Don't redirect on error - let the page handle it
   if (pathname === '/sign-in' && user && !error) {
     const redirectTo = request.nextUrl.searchParams.get('redirect') || '/'
-    console.log(`[Middleware] User already authenticated, redirecting from sign-in to ${redirectTo}`)
     return NextResponse.redirect(new URL(redirectTo, request.url))
   }
 

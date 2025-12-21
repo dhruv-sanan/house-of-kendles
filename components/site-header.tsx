@@ -86,253 +86,256 @@ export function SiteHeader() {
     .slice(0, 2)
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-brand/10 bg-gradient-to-r from-white via-white to-brand-50/30 backdrop-blur-lg">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Mobile Menu Trigger */}
-        <div className="flex md:hidden">
-          {isMounted && (
-            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="mr-2 hover:bg-brand/10 transition-colors duration-200"
-                  aria-label="Open menu"
-                >
-                  <Menu className="h-5 w-5 text-brand-900" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent
-                side="left"
-                className="w-[300px] sm:w-[400px] pr-0 bg-white/95 backdrop-blur-xl border-brand/10"
-              >
-                <SheetHeader className="px-4 text-left">
-                  <SheetTitle className="font-heading text-2xl text-brand-900">House of Kendles</SheetTitle>
-                </SheetHeader>
-                <div className="h-full overflow-y-auto px-4 pb-20 pt-4">
-                  <Accordion type="single" collapsible className="w-full">
-                    {/* User Section as Accordion Item */}
-                    {user && (
-                      <AccordionItem value="account" className="border-b-0 mb-2">
-                        <AccordionTrigger className="hover:no-underline py-2">
-                          <div className="flex items-center gap-3 w-full text-left">
-                            <Avatar className="h-8 w-8 ring-1 ring-brand/20">
-                              <AvatarImage src={userAvatar} alt={userName} />
-                              <AvatarFallback className="bg-brand-100 text-brand-900 text-xs font-medium">
-                                {userInitials}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-brand-900 truncate text-sm">{userName}</p>
-                              <p className="text-[10px] text-muted-foreground truncate">{userEmail}</p>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="flex flex-col space-y-2 pl-2 bg-brand/5 rounded-lg mb-2">
-                          <MobileLink href="/orders" onClick={() => setMobileMenuOpen(false)}>
-                            <Package className="h-4 w-4 mr-2" />
-                            My Orders
-                          </MobileLink>
-                          <MobileLink href="/profile" onClick={() => setMobileMenuOpen(false)}>
-                            <User className="h-4 w-4 mr-2" />
-                            Profile
-                          </MobileLink>
-                          <button
-                            onClick={() => {
-                              setMobileMenuOpen(false)
-                              handleSignOut()
-                            }}
-                            className="flex items-center text-red-600 rounded-md p-2 text-sm hover:bg-red-50 transition-colors w-full text-left"
-                          >
-                            <LogOut className="h-4 w-4 mr-2" />
-                            Sign Out
-                          </button>
-                        </AccordionContent>
-                      </AccordionItem>
-                    )}
-
-                    <AccordionItem value="candles">
-                      <AccordionTrigger className="font-medium text-brand-900 hover:text-gold">
-                        Candles
-                      </AccordionTrigger>
-                      <AccordionContent className="flex flex-col space-y-2 pl-4 text-muted-foreground">
-                        <MobileLink href="/candles" onClick={() => setMobileMenuOpen(false)}>
-                          Shop All Candles
-                        </MobileLink>
-                        <MobileLink href="/candles#bestsellers" onClick={() => setMobileMenuOpen(false)}>
-                          Bestsellers
-                        </MobileLink>
-                        <MobileLink href="/candles#coffee-bar" onClick={() => setMobileMenuOpen(false)}>
-                          The Coffee Bar
-                        </MobileLink>
-                        <MobileLink href="/candles#spiritual" onClick={() => setMobileMenuOpen(false)}>
-                          Spiritual & Wellness
-                        </MobileLink>
-                      </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="decor">
-                      <AccordionTrigger className="font-medium text-brand-900 hover:text-gold">
-                        Home Decor
-                      </AccordionTrigger>
-                      <AccordionContent className="flex flex-col space-y-2 pl-4 text-muted-foreground">
-                        <MobileLink href="/home-decor" onClick={() => setMobileMenuOpen(false)}>
-                          Shop All Decor
-                        </MobileLink>
-                        <MobileLink href="/home-decor#urli" onClick={() => setMobileMenuOpen(false)}>
-                          Urlis
-                        </MobileLink>
-                        <MobileLink href="/home-decor#candle-holders" onClick={() => setMobileMenuOpen(false)}>
-                          Candle Holders
-                        </MobileLink>
-                        <MobileLink href="/home-decor#trays" onClick={() => setMobileMenuOpen(false)}>
-                          Trays
-                        </MobileLink>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-
-                  <div className="flex flex-col space-y-4 py-4 font-medium border-t border-brand/10 mt-2">
-                    <MobileLink href="/bath-salt" onClick={() => setMobileMenuOpen(false)}>
-                      Bath Salt
-                    </MobileLink>
-                    <MobileLink href="/gifting" onClick={() => setMobileMenuOpen(false)}>
-                      Gifting
-                    </MobileLink>
-                    <MobileLink href="/our-story" onClick={() => setMobileMenuOpen(false)}>
-                      Our Story
-                    </MobileLink>
-                    <MobileLink
-                      href="/quiz"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="text-gold font-semibold"
-                    >
-                      Find Your Scent
-                    </MobileLink>
-                  </div>
-
-                  {/* Mobile Sign In Button */}
-                  {!user && !loading && (
-                    <div className="mt-4 pt-4 border-t border-brand/10">
-                      <Link
-                        href="/sign-in"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center justify-center w-full py-3 px-4 bg-brand-900 text-white rounded-lg font-medium hover:bg-brand transition-colors"
-                      >
-                        Sign In
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              </SheetContent>
-            </Sheet>
-          )}
-        </div>
-
-        {/* Brand Logo */}
-        <div className="flex flex-1 items-center justify-center md:justify-start">
-          <Link href="/" className="flex items-center gap-2 group">
-            <span className="font-heading text-2xl font-bold tracking-wide text-brand-900 md:text-3xl group-hover:text-gold transition-colors duration-200">
-              House of Kendles
-            </span>
-          </Link>
-        </div>
-
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex md:flex-1 md:justify-center">
-          <MainNav />
-        </div>
-
-        {/* Right Side Actions */}
-        <div className="flex flex-1 items-center justify-end gap-2">
-          {/* Cart Button */}
-          <Button
-            size="sm"
-            variant="ghost"
-            className={cn("relative hover:bg-brand/10 transition-all duration-300", bump && "scale-110")}
-            aria-label="Open Cart"
-            onClick={() => setOpen(!open)}
-          >
-            <ShoppingCart className="h-5 w-5 text-brand-900" />
-            <span className="sr-only">Cart</span>
-            {count > 0 && (
-              <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-gold to-brand-900 text-[11px] font-bold text-white shadow-md animate-pulse">
-                {count}
-              </span>
-            )}
-          </Button>
-
-          {/* Auth Section - Desktop */}
-          <div className="hidden md:flex items-center ml-2">
-            {loading ? (
-              <div className="h-8 w-8 flex items-center justify-center">
-                <Loader2 className="h-4 w-4 animate-spin text-brand-900/50" />
-              </div>
-            ) : user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+    <>
+      <header className="fixed top-0 left-0 right-0 z-50 w-full border-b border-brand/10 bg-gradient-to-r from-white via-white to-brand-50/30 backdrop-blur-lg">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          {/* Mobile Menu Trigger */}
+          <div className="flex md:hidden">
+            {isMounted && (
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-9 w-9 rounded-full ring-offset-background transition-all hover:ring-2 hover:ring-brand/20 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    aria-label="Open user menu"
+                    size="icon"
+                    className="mr-2 hover:bg-brand/10 transition-colors duration-200"
+                    aria-label="Open menu"
                   >
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={userAvatar} alt={userName} />
-                      <AvatarFallback className="bg-brand-100 text-brand-900 text-xs font-medium">
-                        {userInitials}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Menu className="h-5 w-5 text-brand-900" />
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{userName}</p>
-                      <p className="text-xs leading-none text-muted-foreground">{userEmail}</p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/orders" className="flex items-center cursor-pointer">
-                      <Package className="mr-2 h-4 w-4" />
-                      My Orders
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile" className="flex items-center cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={handleSignOut}
-                    disabled={isSigningOut}
-                    className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
-                  >
-                    {isSigningOut ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <LogOut className="mr-2 h-4 w-4" />
-                    )}
-                    {isSigningOut ? "Signing out..." : "Sign Out"}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Link href="/sign-in">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-brand/20 hover:bg-brand/5 hover:border-brand/40 transition-colors"
+                </SheetTrigger>
+                <SheetContent
+                  side="left"
+                  className="w-[300px] sm:w-[400px] pr-0 bg-white/95 backdrop-blur-xl border-brand/10"
                 >
-                  Sign In
-                </Button>
-              </Link>
+                  <SheetHeader className="px-4 text-left">
+                    <SheetTitle className="font-heading text-2xl text-brand-900">House of Kendles</SheetTitle>
+                  </SheetHeader>
+                  <div className="h-full overflow-y-auto px-4 pb-20 pt-4">
+                    <Accordion type="single" collapsible className="w-full">
+                      {/* User Section as Accordion Item */}
+                      {user && (
+                        <AccordionItem value="account" className="border-b-0 mb-2">
+                          <AccordionTrigger className="hover:no-underline py-2">
+                            <div className="flex items-center gap-3 w-full text-left">
+                              <Avatar className="h-8 w-8 ring-1 ring-brand/20">
+                                <AvatarImage src={userAvatar} alt={userName} />
+                                <AvatarFallback className="bg-brand-100 text-brand-900 text-xs font-medium">
+                                  {userInitials}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-brand-900 truncate text-sm">{userName}</p>
+                                <p className="text-[10px] text-muted-foreground truncate">{userEmail}</p>
+                              </div>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="flex flex-col space-y-2 pl-2 bg-brand/5 rounded-lg mb-2">
+                            <MobileLink href="/orders" onClick={() => setMobileMenuOpen(false)}>
+                              <Package className="h-4 w-4 mr-2" />
+                              My Orders
+                            </MobileLink>
+                            <MobileLink href="/profile" onClick={() => setMobileMenuOpen(false)}>
+                              <User className="h-4 w-4 mr-2" />
+                              Profile
+                            </MobileLink>
+                            <button
+                              onClick={() => {
+                                setMobileMenuOpen(false)
+                                handleSignOut()
+                              }}
+                              className="flex items-center text-red-600 rounded-md p-2 text-sm hover:bg-red-50 transition-colors w-full text-left"
+                            >
+                              <LogOut className="h-4 w-4 mr-2" />
+                              Sign Out
+                            </button>
+                          </AccordionContent>
+                        </AccordionItem>
+                      )}
+
+                      <AccordionItem value="candles">
+                        <AccordionTrigger className="font-medium text-brand-900 hover:text-gold">
+                          Candles
+                        </AccordionTrigger>
+                        <AccordionContent className="flex flex-col space-y-2 pl-4 text-muted-foreground">
+                          <MobileLink href="/candles" onClick={() => setMobileMenuOpen(false)}>
+                            Shop All Candles
+                          </MobileLink>
+                          <MobileLink href="/candles#bestsellers" onClick={() => setMobileMenuOpen(false)}>
+                            Bestsellers
+                          </MobileLink>
+                          <MobileLink href="/candles#coffee-bar" onClick={() => setMobileMenuOpen(false)}>
+                            The Coffee Bar
+                          </MobileLink>
+                          <MobileLink href="/candles#spiritual" onClick={() => setMobileMenuOpen(false)}>
+                            Spiritual & Wellness
+                          </MobileLink>
+                        </AccordionContent>
+                      </AccordionItem>
+                      <AccordionItem value="decor">
+                        <AccordionTrigger className="font-medium text-brand-900 hover:text-gold">
+                          Home Decor
+                        </AccordionTrigger>
+                        <AccordionContent className="flex flex-col space-y-2 pl-4 text-muted-foreground">
+                          <MobileLink href="/home-decor" onClick={() => setMobileMenuOpen(false)}>
+                            Shop All Decor
+                          </MobileLink>
+                          <MobileLink href="/home-decor#urli" onClick={() => setMobileMenuOpen(false)}>
+                            Urlis
+                          </MobileLink>
+                          <MobileLink href="/home-decor#candle-holders" onClick={() => setMobileMenuOpen(false)}>
+                            Candle Holders
+                          </MobileLink>
+                          <MobileLink href="/home-decor#trays" onClick={() => setMobileMenuOpen(false)}>
+                            Trays
+                          </MobileLink>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+
+                    <div className="flex flex-col space-y-4 py-4 font-medium border-t border-brand/10 mt-2">
+                      <MobileLink href="/bath-salt" onClick={() => setMobileMenuOpen(false)}>
+                        Bath Salt
+                      </MobileLink>
+                      <MobileLink href="/gifting" onClick={() => setMobileMenuOpen(false)}>
+                        Gifting
+                      </MobileLink>
+                      <MobileLink href="/our-story" onClick={() => setMobileMenuOpen(false)}>
+                        Our Story
+                      </MobileLink>
+                      <MobileLink
+                        href="/quiz"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="text-gold font-semibold"
+                      >
+                        Find Your Scent
+                      </MobileLink>
+                    </div>
+
+                    {/* Mobile Sign In Button */}
+                    {!user && !loading && (
+                      <div className="mt-4 pt-4 border-t border-brand/10">
+                        <Link
+                          href={`/sign-in?redirect=${pathname}`}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center justify-center w-full py-3 px-4 bg-brand-900 text-white rounded-lg font-medium hover:bg-brand transition-colors"
+                        >
+                          Sign In
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
             )}
           </div>
+
+          {/* Brand Logo */}
+          <div className="flex flex-1 items-center justify-center md:justify-start">
+            <Link href="/" className="flex items-center gap-2 group">
+              <span className="font-heading text-lg sm:text-2xl font-bold tracking-wide text-brand-900 md:text-3xl group-hover:text-gold transition-colors duration-200 whitespace-nowrap">
+                House of Kendles
+              </span>
+            </Link>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex md:flex-1 md:justify-center">
+            <MainNav />
+          </div>
+
+          {/* Right Side Actions */}
+          <div className="flex items-center justify-end gap-2 md:flex-1">
+            {/* Cart Button */}
+            <Button
+              size="sm"
+              variant="ghost"
+              className={cn("relative hover:bg-brand/10 transition-all duration-300", bump && "scale-110")}
+              aria-label="Open Cart"
+              onClick={() => setOpen(!open)}
+            >
+              <ShoppingCart className="h-5 w-5 text-brand-900" />
+              <span className="sr-only">Cart</span>
+              {count > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-gold to-brand-900 text-[11px] font-bold text-white shadow-md animate-pulse">
+                  {count}
+                </span>
+              )}
+            </Button>
+
+            {/* Auth Section - Desktop */}
+            <div className="hidden md:flex items-center ml-2">
+              {loading ? (
+                <div className="h-8 w-8 flex items-center justify-center">
+                  <Loader2 className="h-4 w-4 animate-spin text-brand-900/50" />
+                </div>
+              ) : user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="relative h-9 w-9 rounded-full ring-offset-background transition-all hover:ring-2 hover:ring-brand/20 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      aria-label="Open user menu"
+                    >
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={userAvatar} alt={userName} />
+                        <AvatarFallback className="bg-brand-100 text-brand-900 text-xs font-medium">
+                          {userInitials}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{userName}</p>
+                        <p className="text-xs leading-none text-muted-foreground">{userEmail}</p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/orders" className="flex items-center cursor-pointer">
+                        <Package className="mr-2 h-4 w-4" />
+                        My Orders
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="flex items-center cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleSignOut}
+                      disabled={isSigningOut}
+                      className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                    >
+                      {isSigningOut ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <LogOut className="mr-2 h-4 w-4" />
+                      )}
+                      {isSigningOut ? "Signing out..." : "Sign Out"}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link href={`/sign-in?redirect=${pathname}`}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-brand/20 hover:bg-brand/5 hover:border-brand/40 transition-colors"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+      <div className="h-16" />
+    </>
   )
 }
 

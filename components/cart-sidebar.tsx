@@ -179,7 +179,7 @@ export function CartSidebar() {
                     >
                       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-muted border">
                         <Image
-                          src={item.image_url || "/placeholder.png"}
+                          src={item.image_url || "https://res.cloudinary.com/dq077uui5/image/upload/v1766345243/House_of-2_page-0001_pzag8s.jpg"}
                           alt={item.name}
                           fill
                           className="object-cover"
@@ -316,7 +316,7 @@ export function CartSidebar() {
                           >
                             <div className="relative aspect-square w-full overflow-hidden rounded-md bg-muted">
                               <Image
-                                src={rec.image || "/placeholder.png"}
+                                src={rec.image || "https://res.cloudinary.com/dq077uui5/image/upload/v1766345243/House_of-2_page-0001_pzag8s.jpg"}
                                 alt={rec.name}
                                 fill
                                 className="object-cover group-hover:scale-105 transition-transform duration-500"

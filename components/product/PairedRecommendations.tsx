@@ -101,7 +101,7 @@ export function PairedRecommendations({ productId, className }: PairedRecommenda
                     </div>
 
                     {/* Fade edge for mobile scroll */}
-                    <div className="md:hidden absolute right-0 top-0 bottom-4 w-8 bg-gradient-to-l from-surface to-transparent pointer-events-none" />
+
                 </div>
             )}
         </section>

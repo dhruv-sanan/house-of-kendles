@@ -27,8 +27,7 @@ export function SignInContent({ redirectTo = '/' }: SignInContentProps) {
             const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
             const redirectUrl = `${siteUrl}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`
 
-            console.log('[SignIn] Initiating Google OAuth')
-            console.log('[SignIn] Redirect URL:', redirectUrl)
+            const redirectUrl = `${siteUrl}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`
 
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
@@ -46,11 +45,10 @@ export function SignInContent({ redirectTo = '/' }: SignInContentProps) {
                 throw error
             }
 
-            console.log('[SignIn] OAuth response:', data)
+
 
             // If we have a URL, we need to redirect manually
             if (data?.url) {
-                console.log('[SignIn] Redirecting to:', data.url)
                 window.location.href = data.url
             }
 

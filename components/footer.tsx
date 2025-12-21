@@ -3,11 +3,11 @@ import { Facebook, Instagram, Twitter } from "lucide-react" // Assuming you have
 
 export function SiteFooter() {
   return (
-    <footer className="bg-brand-900 text-white pt-20 pb-10">
-      <div className="mx-auto max-w-7xl px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-        <div className="md:col-span-1">
+    <footer className="bg-brand-900 text-white pt-12 pb-8 md:pt-20 md:pb-10">
+      <div className="mx-auto max-w-7xl px-6 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-12 md:mb-16">
+        <div className="col-span-2 md:col-span-1">
           <h4 className="font-heading text-3xl text-gold mb-6">House of Kendles</h4>
-          <p className="text-white/70 text-sm leading-relaxed mb-6">
+          <p className="text-white/70 text-sm leading-relaxed mb-6 max-w-sm">
             Crafted with care in India. Luxury minimalism for everyday serenity. We believe in the power of scent to transform spaces.
           </p>
           <div className="flex gap-4">
@@ -17,7 +17,7 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div>
+        <div className="col-span-1">
           <h5 className="font-medium text-gold tracking-widest text-sm uppercase mb-6">Shop</h5>
           <ul className="space-y-4 text-sm text-white/70">
             <li><Link href="/candles" className="hover:text-white transition-colors">Candles</Link></li>
@@ -27,7 +27,7 @@ export function SiteFooter() {
           </ul>
         </div>
 
-        <div>
+        <div className="col-span-1">
           <h5 className="font-medium text-gold tracking-widest text-sm uppercase mb-6">Explore</h5>
           <ul className="space-y-4 text-sm text-white/70">
             <li><Link href="/our-story" className="hover:text-white transition-colors">Our Story</Link></li>
@@ -37,7 +37,7 @@ export function SiteFooter() {
           </ul>
         </div>
 
-        <div>
+        <div className="col-span-2 md:col-span-1">
           <h5 className="font-medium text-gold tracking-widest text-sm uppercase mb-6">Stay in the Know</h5>
           <p className="text-white/70 text-sm mb-4">Subscribe for exclusive offers and new launches.</p>
           <form className="flex gap-2">
