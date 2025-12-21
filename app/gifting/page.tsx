@@ -4,13 +4,19 @@ import { ProductCard } from "@/components/product-card"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { getProducts, getProductBySlug } from "@/app/_actions/products"
-import { Gift, Sparkles, HeartHandshake } from "lucide-react"
+import { Gift, Sparkles, HeartHandshake, ArrowDown } from "lucide-react"
 import { AddKitToCartButton } from "@/components/add-kit-to-cart-button"
+import { createClient } from "@/utils/supabase/server"
+import { AddProductDialog } from "@/components/admin/AddProductDialog"
 
 export default async function GiftingPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const isAdmin = user?.id === 'fa71f5fe-0f1a-41bd-ad55-228b07afbef6'
+
   const giftingProducts = await getProducts({ category: "Gifting" })
 
-  // Try to fetch the real DIY Kit product, otherwise pass null to use fallback in component
+  // Try to fetch the real DIY Kit product
   let diyKitProduct = null
   try {
     const fetchedProduct = await getProductBySlug("diy-candle-kit")
@@ -25,45 +31,47 @@ export default async function GiftingPage() {
       }
     }
   } catch (e) {
-    // Ignore error, use fallback
+    // Ignore error
   }
 
   return (
     <>
       <SiteHeader />
-      <main className="bg-surface">
-        {/* --- Hero Section (Themed like Home) --- */}
-        <section className="relative bg-brand-900 text-white overflow-hidden">
-          <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 py-20 lg:grid-cols-2 lg:py-32">
-            <div className="flex flex-col items-start space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-              <span className="text-gold font-medium tracking-widest text-sm uppercase">
-                The Art of Giving
-              </span>
-              <h1 className="font-heading text-5xl leading-[1.1] md:text-6xl lg:text-7xl text-white">
-                Curated with <br />
-                <span className="text-gold italic">Love & Care</span>
-              </h1>
-              <p className="text-lg text-white/80 leading-relaxed max-w-md">
-                Find the perfect gift to celebrate life's special moments. Handpicked luxuries wrapped in our signature gold-foiled boxes.
-              </p>
-              <div className="flex flex-wrap gap-4 pt-4">
-                <Link href="#collections">
-                  <Button size="lg" className="bg-gold text-brand-900 hover:bg-white hover:text-brand-900 font-semibold px-8 transition-all duration-300">
-                    Shop Collections
-                  </Button>
-                </Link>
-              </div>
-            </div>
+      <main>
+        {/* Admin Add Product */}
+        {isAdmin && (
+          <div className="container mx-auto py-4 flex justify-end">
+            <AddProductDialog
+              isAdmin={isAdmin}
+              fixedCategory="Gifting"
+              pageTitle="Gift Set"
+            />
+          </div>
+        )}
 
-            <div className="relative aspect-[4/5] w-full lg:aspect-square rounded-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-1000 delay-200 border border-white/10">
-              <div className="absolute inset-0 bg-[url('/images/hamper-bg-luxury.jpg')] bg-cover bg-center hover:scale-105 transition-transform duration-700 ease-out" />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-900/40 to-transparent" />
+        {/* --- Hero Section (Full Width) --- */}
+        <section className="relative h-[65vh] min-h-[500px] w-full bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('/images/hamper-bg-luxury.jpg')" }}>
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white px-4">
+            <span className="text-gold font-medium tracking-widest text-sm uppercase mb-4">The Art of Giving</span>
+            <h1 className="font-heading text-5xl md:text-7xl text-white drop-shadow-lg mb-6">
+              Curated with <span className="text-gold italic">Love</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-white/90 max-w-2xl font-light leading-relaxed mb-8">
+              Find the perfect gift to celebrate life's special moments. Handpicked luxuries wrapped in our signature gold-foiled boxes.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link href="#collections">
+                <Button className="bg-gold text-brand-900 hover:bg-white hover:text-brand-900 font-semibold px-8 h-12 text-lg">
+                  Shop Collections
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
 
-        {/* --- Why Choose Us --- */}
-        <section className="bg-surface py-20">
+        {/* --- Benefits Section --- */}
+        <section className="bg-white py-20">
           <div className="mx-auto max-w-6xl px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
               <div className="flex flex-col items-center">
@@ -91,11 +99,10 @@ export default async function GiftingPage() {
           </div>
         </section>
 
-        {/* --- Pre-Curated Collections --- */}
-        <section id="collections" className="bg-muted/30 py-24">
+        {/* --- Signature Collections --- */}
+        <section id="collections" className="bg-muted/30 py-24 scroll-mt-20">
           <div className="mx-auto max-w-7xl px-6">
             <div className="text-center mb-16">
-              <span className="text-brand-900 font-medium tracking-widest text-sm uppercase">Ready to Ship</span>
               <h2 className="font-heading text-4xl md:text-5xl text-brand-900 mt-3">Signature Collections</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto mt-4">Thoughtfully assembled luxury for every occasion.</p>
             </div>
@@ -121,20 +128,29 @@ export default async function GiftingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
               <div className="order-2 md:order-1">
                 <span className="text-brand-900 font-medium tracking-widest text-sm uppercase mb-2 block">The Experience Gift</span>
-                <h2 className="font-heading text-4xl md:text-5xl text-brand-900 mb-6">DIY Candle Kit</h2>
+                <Link href={`/product/${diyKitProduct?.slug || 'diy-candle-kit'}`} className="group-hover:text-brand-700 transition-colors">
+                  <h2 className="font-heading text-4xl md:text-5xl text-brand-900 mb-6 hover:underline decoration-brand-900/30 underline-offset-8">DIY Candle Kit</h2>
+                </Link>
                 <p className="text-lg text-muted-foreground leading-relaxed mb-8">
                   Give the gift of creativity. Our DIY kit comes with everything needed to pour a custom soy candle at home: pre-measured wax, a premium fragrance oil of choice, a glass jar, wick, and easy-to-follow instructions.
                 </p>
                 <div className="flex items-baseline gap-4 mb-8">
                   <span className="text-3xl font-light text-brand-900">₹{diyKitProduct?.price || 550}</span>
-                  <span className="text-sm text-muted-foreground line-through">₹750</span>
+                  {diyKitProduct?.price !== 750 && <span className="text-sm text-muted-foreground line-through">₹750</span>}
                 </div>
 
                 <AddKitToCartButton product={diyKitProduct} />
               </div>
-              <div className="order-1 md:order-2 relative h-[600px] w-full rounded-2xl overflow-hidden shadow-2xl">
-                <div className="absolute inset-0 bg-[url('/images/decor/tray_cane_tan.jpg')] bg-cover bg-center hover:scale-105 transition-transform duration-1000" />
-              </div>
+              <Link
+                href={`/product/${diyKitProduct?.slug || 'diy-candle-kit'}`}
+                className="order-1 md:order-2 relative h-[500px] w-full rounded-2xl overflow-hidden shadow-2xl block group"
+              >
+                <div className="absolute inset-0 bg-[url('/images/decor/tray_cane_tan.jpg')] bg-cover bg-center group-hover:scale-105 transition-transform duration-1000" />
+                {/* Overlay hint */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <span className="bg-white/90 text-brand-900 px-6 py-2 rounded-full font-medium shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform">View Details</span>
+                </div>
+              </Link>
             </div>
           </div>
         </section>

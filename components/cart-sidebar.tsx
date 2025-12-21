@@ -26,11 +26,14 @@ import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/com
 import { useSidebar } from "@/components/ui/sidebar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
+import { useSession } from "@/hooks/use-session"
+import { trackRecommendationClick, trackRecommendationAddToCart } from "@/lib/recommendation-tracking"
 import type { RecommendedProduct } from "@/types/recommendation.types"
 
 export function CartSidebar() {
   const { open, setOpen } = useSidebar()
   const { cart, subtotal, total, discount, setQty, remove, addItem, applyCoupon, appliedCoupon } = useCart()
+  const { sessionId } = useSession()
   const { toast } = useToast()
 
   const [couponCode, setCouponCode] = React.useState("")
@@ -285,7 +288,19 @@ export function CartSidebar() {
                         >
                           <div
                             className="group relative flex flex-col gap-2 cursor-pointer rounded-lg bg-white p-2 border border-transparent hover:border-brand/20 hover:shadow-sm transition-all"
-                            onClick={() => {
+                            onClick={async () => {
+                              // Track click + conversion
+                              if (sessionId) {
+                                const clickId = await trackRecommendationClick({
+                                  sessionId,
+                                  recommendedProductId: rec.id,
+                                  recommendedVariantId: rec.variantId,
+                                  clickLocation: "cart_impulse",
+                                  sourcePageUrl: "/cart",
+                                })
+                                if (clickId) await trackRecommendationAddToCart(clickId)
+                              }
+
                               addItem({
                                 variant_id: rec.variantId,
                                 product_id: rec.id,

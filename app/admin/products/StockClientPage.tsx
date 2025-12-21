@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"; // <-- Add this import
-import { FilePenLine } from "lucide-react"; // <-- Add icon import
+import { FilePenLine, Pencil } from "lucide-react"; // <-- Add icon import
 
 function StockUpdateForm({ variantId }: { variantId: number }) {
   const { toast } = useToast()
@@ -19,7 +19,7 @@ function StockUpdateForm({ variantId }: { variantId: number }) {
     startTransition(async () => {
       const result = await updateStock(formData)
       const operation = formData.get("operation")
-  
+
       if (result.success) {
         toast({
           title: "Success!",
@@ -38,7 +38,7 @@ function StockUpdateForm({ variantId }: { variantId: number }) {
       }
     })
   }
-  
+
 
   return (
     <form ref={formRef} action={handleAction} className="flex items-center gap-2">
@@ -111,27 +111,44 @@ export function StockClientPage({ products }: { products: ProductWithVariants[] 
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
             <div key={product.id} className="rounded-lg border">
-              <div className="bg-muted/50 p-4">
+              <div className="bg-muted/50 p-4 flex items-center justify-between">
                 <h2 className="font-semibold">{product.name}</h2>
+                <Link href={`/admin/products/${product.slug}/edit`}>
+                  <Button variant="ghost" size="sm" className="h-8">
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Edit Product
+                  </Button>
+                </Link>
               </div>
               <div className="divide-y">
                 {product.variants.map((variant) => (
                   <div key={variant.id} className="flex flex-col items-start justify-between gap-4 p-4 sm:flex-row sm:items-center">
                     {/* Left Side: Variant Info & Recipe Link */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                       <div>
-                         <p className="font-medium">{variant.size}</p>
-                         <p className="text-sm text-muted-foreground">
-                            Current Stock: <span className="text-lg font-bold">{variant.stock_quantity}</span>
-                         </p>
-                       </div>
-                       {/* --- ADDED: Link to BOM Editor --- */}
-                       <Link href={`/admin/products/variants/${variant.id}/bom`}>
-                           <Button variant="outline" size="sm" className="mt-2 sm:mt-0">
-                               <FilePenLine className="mr-1.5 h-4 w-4" />
-                               Edit Recipe
-                           </Button>
-                       </Link>
+                      <div>
+                        <p className="font-medium">{variant.size}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Current Stock: <span className="text-lg font-bold">{variant.stock_quantity}</span>
+                        </p>
+                      </div>
+
+                      <div className="flex gap-2 flex-wrap">
+                        {/* Link to Variant Editor */}
+                        <Link href={`/admin/products/variants/${variant.id}/edit`}>
+                          <Button variant="outline" size="sm" className="mt-2 sm:mt-0">
+                            <Pencil className="mr-1.5 h-4 w-4" />
+                            Edit Variant
+                          </Button>
+                        </Link>
+
+                        {/* Link to BOM Editor */}
+                        <Link href={`/admin/products/variants/${variant.id}/bom`}>
+                          <Button variant="outline" size="sm" className="mt-2 sm:mt-0">
+                            <FilePenLine className="mr-1.5 h-4 w-4" />
+                            Edit Recipe
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
 
                     {/* Right Side: Stock Update Form */}
@@ -147,7 +164,7 @@ export function StockClientPage({ products }: { products: ProductWithVariants[] 
           </div>
         )}
       </div>
-      
+
     </main>
   )
 }

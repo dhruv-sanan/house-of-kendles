@@ -16,10 +16,13 @@ import { useToast } from "@/hooks/use-toast"
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
+import { useSession } from "@/hooks/use-session"
+import { trackRecommendationClick, trackRecommendationAddToCart } from "@/lib/recommendation-tracking"
 import type { RecommendedProduct } from "@/types/recommendation.types"
 
 export default function CartPage() {
   const { cart, total, subtotal, discount, setQty, remove, applyCoupon, appliedCoupon, addItem } = useCart()
+  const { sessionId } = useSession()
   const { toast } = useToast()
 
   const [couponInput, setCouponInput] = useState("")
@@ -183,7 +186,19 @@ export default function CartPage() {
                         {recommendations.map((rec) => (
                           <CarouselItem key={rec.id} className="pl-4 basis-1/2 sm:basis-1/3 lg:basis-1/4">
                             <div className="bg-white rounded-xl border border-transparent hover:border-brand/20 p-3 shadow-sm hover:shadow-md transition-all cursor-pointer group"
-                              onClick={() => {
+                              onClick={async () => {
+                                // Track click + conversion
+                                if (sessionId) {
+                                  const clickId = await trackRecommendationClick({
+                                    sessionId,
+                                    recommendedProductId: rec.id,
+                                    recommendedVariantId: rec.variantId,
+                                    clickLocation: "cart_impulse",
+                                    sourcePageUrl: "/cart",
+                                  })
+                                  if (clickId) await trackRecommendationAddToCart(clickId)
+                                }
+
                                 addItem({
                                   variant_id: rec.variantId,
                                   product_id: rec.id,

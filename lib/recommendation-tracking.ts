@@ -89,3 +89,68 @@ export async function findRecentClick(
     if (error || !data) return null
     return data.id
 }
+
+/**
+ * Fetch aggregated analytics data for admin dashboard
+ */
+export async function getRecommendationAnalytics() {
+    const supabase = await createClient()
+
+    // Fetch all clicks for aggregation
+    const { data: clicks, error } = await supabase
+        .from('recommendation_clicks')
+        .select(`
+            *,
+            recommended_product:products!recommended_product_id(id, name)
+        `)
+        .order('clicked_at', { ascending: false })
+
+    if (error) {
+        console.error('Error fetching analytics:', error)
+        return {
+            totalClicks: 0,
+            impulseClicks: 0,
+            pairedClicks: 0,
+            totalConversions: 0,
+            conversionRate: 0,
+            topProducts: []
+        }
+    }
+
+    const totalClicks = clicks.length
+    const impulseClicks = clicks.filter(c => c.click_location === 'cart_impulse').length
+    const pairedClicks = clicks.filter(c => c.click_location === 'item_page_paired').length
+    const totalConversions = clicks.filter(c => c.added_to_cart).length
+    const conversionRate = totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0
+
+    // Aggregate by product
+    const productStats = new Map<number, { name: string; clicks: number; conversions: number }>()
+
+    clicks.forEach(click => {
+        const pid = click.recommended_product_id
+        if (!productStats.has(pid)) {
+            productStats.set(pid, {
+                name: click.recommended_product?.name || `Product #${pid}`,
+                clicks: 0,
+                conversions: 0
+            })
+        }
+
+        const stats = productStats.get(pid)!
+        stats.clicks++
+        if (click.added_to_cart) stats.conversions++
+    })
+
+    const topProducts = Array.from(productStats.values())
+        .sort((a, b) => b.conversions - a.conversions || b.clicks - a.clicks)
+        .slice(0, 5)
+
+    return {
+        totalClicks,
+        impulseClicks,
+        pairedClicks,
+        totalConversions,
+        conversionRate,
+        topProducts
+    }
+}

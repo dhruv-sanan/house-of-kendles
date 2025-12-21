@@ -17,8 +17,9 @@ import {
 import { Trash2 } from "lucide-react"
 import { Combobox } from "@/components/ui/combobox"
 
-export default async function BomEditPage({ params }: { params: { variantId: string } }) {
-  const variantId = Number(params.variantId)
+export default async function BomEditPage({ params }: { params: Promise<{ variantId: string }> }) {
+  const { variantId: variantIdParam } = await params
+  const variantId = Number(variantIdParam)
   if (isNaN(variantId)) notFound()
 
   const variant = await getProductVariantById(variantId)
@@ -91,39 +92,39 @@ export default async function BomEditPage({ params }: { params: { variantId: str
 
         {/* Add BOM Item Form */}
         <div>
-           <form action={addBomItem} className="rounded-lg border p-6 space-y-4 sticky top-4">
-             <h2 className="font-semibold text-lg">Add Recipe Item</h2>
-             <input type="hidden" name="productVariantId" value={variantId} />
+          <form action={addBomItem} className="rounded-lg border p-6 space-y-4 sticky top-4">
+            <h2 className="font-semibold text-lg">Add Recipe Item</h2>
+            <input type="hidden" name="productVariantId" value={variantId} />
 
-             <div>
-                <Label htmlFor="rawMaterialId">Raw Material</Label>
-                <Combobox
-                    name="rawMaterialId" // Name matches the form data key
-                    options={materialOptions}
-                    placeholder="Select material..."
-                    searchPlaceholder="Search material..."
-                    notFoundText="No material found."
-                    required={true}
-                />
-             </div>
+            <div>
+              <Label htmlFor="rawMaterialId">Raw Material</Label>
+              <Combobox
+                name="rawMaterialId" // Name matches the form data key
+                options={materialOptions}
+                placeholder="Select material..."
+                searchPlaceholder="Search material..."
+                notFoundText="No material found."
+                required={true}
+              />
+            </div>
 
-             <div>
-                <Label htmlFor="quantityRequired">Quantity Required</Label>
-                <Input
-                    id="quantityRequired"
-                    name="quantityRequired"
-                    type="number"
-                    step="any" // Allow decimals like 0.15 kg
-                    min="0.0001" // Prevent zero or negative
-                    required
-                    placeholder="e.g., 0.15 or 1"
-                />
-             </div>
+            <div>
+              <Label htmlFor="quantityRequired">Quantity Required</Label>
+              <Input
+                id="quantityRequired"
+                name="quantityRequired"
+                type="number"
+                step="any" // Allow decimals like 0.15 kg
+                min="0.0001" // Prevent zero or negative
+                required
+                placeholder="e.g., 0.15 or 1"
+              />
+            </div>
 
-             <Button type="submit" className="w-full bg-brand text-white hover:bg-brand-900">
-                Add to Recipe
-             </Button>
-           </form>
+            <Button type="submit" className="w-full bg-brand text-white hover:bg-brand-900">
+              Add to Recipe
+            </Button>
+          </form>
         </div>
       </div>
     </main>

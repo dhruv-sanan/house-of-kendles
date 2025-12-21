@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { getProducts } from "@/app/_actions/products"
 import React, { Suspense } from "react"
-import { ArrowRight, Star } from "lucide-react"
+import { ArrowRight, Star, Sparkles } from "lucide-react"
 import {
   Carousel,
   CarouselContent,
@@ -172,20 +172,44 @@ export default async function HomePage() {
           <div className="absolute inset-0 bg-brand-900/10" />
           <div className="absolute inset-0 bg-gradient-to-r from-surface via-surface/90 to-transparent" />
 
-          <SlideIn className="relative z-10 mx-auto max-w-7xl px-6 flex flex-col items-start">
-            <span className="text-brand-900 font-medium tracking-widest text-sm uppercase mb-4">The Art of Giving</span>
-            <h3 className="font-heading text-4xl md:text-6xl text-brand-900 mb-6 max-w-xl">
-              Curated with <br /> <span className="text-gold italic">Love & Care</span>
-            </h3>
-            <p className="text-brand-900/70 text-lg mb-8 max-w-lg leading-relaxed">
-              Find the perfect gift to celebrate life's special moments. Handpicked luxuries wrapped in our signature gold-foiled boxes.
-            </p>
-            <Link href="/gifting">
-              <Button size="lg" className="bg-brand-900 text-white hover:bg-brand-900/90 px-10 h-14 text-lg shadow-xl hover:shadow-2xl transition-all duration-300">
-                Explore Gifting
-              </Button>
-            </Link>
-          </SlideIn>
+          <div className="relative z-10 mx-auto max-w-7xl px-6 flex flex-col md:flex-row items-center justify-between gap-12">
+            <SlideIn delay={0.1} className="flex flex-col items-start w-full md:w-auto">
+              <div className="group relative overflow-hidden rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-8 md:p-12 shadow-2xl transition-all duration-500 hover:scale-105 hover:bg-white/20 max-w-xl">
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-900/5 to-transparent opacity-100 group-hover:opacity-80 transition-opacity duration-500" />
+                <div className="relative z-10">
+                  <span className="text-brand-900 font-medium tracking-widest text-sm uppercase mb-4 block">The Art of Giving</span>
+                  <h3 className="font-heading text-4xl md:text-5xl text-brand-900 mb-6">
+                    Curated with <br /> <span className="text-gold italic">Love & Care</span>
+                  </h3>
+                  <p className="text-brand-900/70 text-lg mb-8 leading-relaxed">
+                    Find the perfect gift to celebrate life's special moments. Handpicked luxuries wrapped in our signature gold-foiled boxes.
+                  </p>
+                  <Link href="/gifting">
+                    <Button size="lg" className="bg-brand-900 text-white hover:bg-brand-900/90 px-10 h-14 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 w-full md:w-auto">
+                      Explore Gifting
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </SlideIn>
+
+            {/* Fancy Quiz Button */}
+            <SlideIn delay={0.3} className="w-full md:w-auto flex justify-center">
+              <Link href="/quiz">
+                <div className="group relative overflow-hidden rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-8 md:p-10 shadow-2xl transition-all duration-500 hover:scale-105 hover:bg-white/20 cursor-pointer text-center max-w-sm">
+                  <div className="absolute inset-0 bg-gradient-to-br from-gold/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <Sparkles className="w-12 h-12 text-gold mx-auto mb-4 group-hover:rotate-12 transition-transform duration-500" />
+                  <h4 className="font-heading text-2xl md:text-3xl text-brand-900 mb-2">Find Your Scent</h4>
+                  <p className="text-brand-900/80 mb-6 text-sm">
+                    Take our quick quiz to discover the perfect fragrance for your soul.
+                  </p>
+                  <Button className="bg-gold text-brand-900 hover:bg-gold/90 font-medium px-8 py-6 rounded-full w-full text-lg shadow-lg group-hover:shadow-gold/20 transition-all">
+                    Start Quiz
+                  </Button>
+                </div>
+              </Link>
+            </SlideIn>
+          </div>
         </section>
       </main>
       <Suspense fallback={null}>
