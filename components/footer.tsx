@@ -33,7 +33,7 @@ export function SiteFooter() {
             <li><Link href="/our-story" className="hover:text-white transition-colors">Our Story</Link></li>
             <li><Link href="/candle-care" className="hover:text-white transition-colors">Candle Care</Link></li>
             <li><Link href="/quiz" className="hover:text-white transition-colors">Scent Quiz</Link></li>
-            <li><Link href="/admin/login" className="hover:text-white transition-colors">Admin Login</Link></li>
+            <li><Link href="/admin" className="hover:text-white transition-colors">Admin Login</Link></li>
           </ul>
         </div>
 

@@ -4,12 +4,25 @@ import { SiteFooter } from "@/components/footer"
 import { Package, ShoppingCart, Warehouse, Boxes } from "lucide-react" // Added Boxes icon
 import { Toaster } from "@/components/ui/toaster"
 import { AdminNav } from "./AdminNav"
+import { getCurrentUser } from "@/lib/auth"
+import { isAdmin } from "@/lib/admin-auth"
+import { redirect } from "next/navigation"
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const user = await getCurrentUser()
+
+  if (!user) {
+    redirect('/sign-in?redirect=/admin')
+  }
+
+  if (!isAdmin(user.id)) {
+    redirect('/')
+  }
+
   return (
     <>
       <SiteHeader />

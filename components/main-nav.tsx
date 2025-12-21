@@ -37,28 +37,28 @@ const homeDecorItems = [
 ]
 
 const candleItems = [
-    {
-      title: "Shop All Candles",
-      href: "/candles",
-      description: "Hand-poured soy wax candles for every mood.",
-    },
-    {
-      title: "The Coffee Bar",
-      href: "/candles#coffee-bar",
-      description: "Rich, aromatic coffee-inspired blends.",
-    },
-    {
-      title: "Moods & Quotes", // Updated
-      href: "/candles#mood-quotes",
-      description: "Fun, relatable scents that speak your mind.",
-    },
-    {
-      title: "Floral Sculptures", // Updated
-      href: "/candles#floral",
-      description: "Intricate botanical designs and bouquets.",
-    },
-  ]
-  
+  {
+    title: "Shop All Candles",
+    href: "/candles",
+    description: "Hand-poured soy wax candles for every mood.",
+  },
+  {
+    title: "The Coffee Bar",
+    href: "/candles#coffee-bar",
+    description: "Rich, aromatic coffee-inspired blends.",
+  },
+  {
+    title: "Moods & Quotes", // Updated
+    href: "/candles#mood-quotes",
+    description: "Fun, relatable scents that speak your mind.",
+  },
+  {
+    title: "Floral Sculptures", // Updated
+    href: "/candles#floral",
+    description: "Intricate botanical designs and bouquets.",
+  },
+]
+
 
 export function MainNav() {
   return (
@@ -128,8 +128,8 @@ export function MainNav() {
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
-        
-         <NavigationMenuItem>
+
+        <NavigationMenuItem>
           <Link href="/quiz" legacyBehavior passHref>
             <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "text-gold font-semibold")}>
               Find Your Scent

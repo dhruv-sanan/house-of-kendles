@@ -20,6 +20,12 @@ export const metadata: Metadata = {
   generator: "v0.app",
 }
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+}
+
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -39,7 +45,7 @@ export default function RootLayout({
             <Suspense fallback={null}>
               <HashScroll />
               <SidebarProvider defaultOpen={false}>
-                <div className="flex min-h-screen flex-col w-full">
+                <div className="flex min-h-screen flex-col w-full overflow-x-hidden max-w-[100vw]">
                   {children}
                 </div>
                 {/* The Cart Sidebar sits on the right */}

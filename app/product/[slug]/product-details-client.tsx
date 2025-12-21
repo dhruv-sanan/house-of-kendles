@@ -332,15 +332,15 @@ export function ProductDetailsClient({ product, isAdmin }: { product: ProductWit
   return (
     <div className="relative">
       {isAdmin && (
-        <div className="absolute -top-12 right-0 flex items-center gap-2 bg-muted/50 p-2 rounded-lg border z-10">
-          <Label htmlFor="edit-mode" className="text-sm font-semibold cursor-pointer">Admin Edit Mode</Label>
+        <div className="fixed top-24 right-4 z-50 flex items-center gap-2 bg-background/90 backdrop-blur border p-2 rounded-lg shadow-lg">
+          <Label htmlFor="edit-mode" className="text-sm font-semibold cursor-pointer">Admin Edit</Label>
           <Switch id="edit-mode" checked={isEditMode} onCheckedChange={setIsEditMode} />
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 w-full max-w-full">
         {/* IMAGE SECTION */}
-        <div className="space-y-4">
+        <div className="space-y-4 min-w-0">
           <Carousel className="w-full" opts={{ loop: true }}>
             <CarouselContent>
               {imageList.map((img, index) => (
@@ -392,9 +392,11 @@ export function ProductDetailsClient({ product, isAdmin }: { product: ProductWit
                   </div>
                 </CarouselItem>
               ))}
+
             </CarouselContent>
-            <CarouselPrevious className="absolute left-2" />
-            <CarouselNext className="absolute right-2" />
+            {/* Hide buttons on mobile to prevent overlay/overflow issues - users swipe anyway */}
+            <CarouselPrevious className="absolute left-2 hidden md:flex" />
+            <CarouselNext className="absolute right-2 hidden md:flex" />
           </Carousel>
 
           {isEditMode && isAdmin && (
@@ -416,7 +418,7 @@ export function ProductDetailsClient({ product, isAdmin }: { product: ProductWit
         </div>
 
         {/* DETAILS SECTION */}
-        <div className="space-y-6">
+        <div className="space-y-6 min-w-0">
           {/* PRODUCT INFO EDIT */}
           {isEditMode && isAdmin ? (
             <form action={handleSaveProduct} className="space-y-4 border p-4 rounded-lg bg-muted/20">
@@ -560,6 +562,6 @@ export function ProductDetailsClient({ product, isAdmin }: { product: ProductWit
           )}
         </div>
       </div>
-    </div>
+    </div >
   )
 }

@@ -96,7 +96,7 @@ export function CartSidebar() {
       <SheetContent
         side="right"
         className="
-    w-[70vw]
+    w-[75vw]
     sm:max-w-[400px]
     p-0
     flex flex-col
@@ -132,17 +132,17 @@ export function CartSidebar() {
 
         {/* ⭐ CHANGED: ScrollArea takes up remaining height and can scroll vertically */}
         <ScrollArea className="flex-1 w-full overflow-y-auto overflow-x-hidden">
-          <div className="p-4 pb-5"> {/* ⭐ extra bottom padding so footer doesn’t overlap content */}
+          <div className="p-3 pb-5"> {/* Reduced padding for mobile */}
 
             {/* 1. Welcome Nudge */}
             {welcomeCoupon && !appliedCoupon && cart.items.length > 0 && (
               <div className="mb-6 bg-white p-4 rounded-xl border border-brand/10 shadow-sm">
-                <div className="mb-2 flex justify-between text-xs items-center">
-                  <span className="font-medium text-brand-900 flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5 text-gold fill-gold" />
+                <div className="mb-2 flex flex-col gap-1 items-start">
+                  <span className="font-medium text-brand-900 flex items-center gap-1.5 text-xs">
+                    <Sparkles className="h-3.5 w-3.5 text-gold fill-gold shrink-0" />
                     Unlock 10% Off
                   </span>
-                  <span className="text-muted-foreground text-[10px] font-medium">
+                  <span className="text-muted-foreground text-[10px] font-medium w-full text-right">
                     {amountToUnlock > 0 ? `Add ₹${amountToUnlock} more` : "Unlocked!"}
                   </span>
                 </div>
@@ -190,7 +190,7 @@ export function CartSidebar() {
                           <Link
                             href={`/product/${item.slug ?? item.product_id}`} // 👈 use slug if present
                             onClick={() => setOpen(false)}
-                            className="font-medium text-sm line-clamp-2 text-brand-900 hover:text-gold transition-colors"
+                            className="font-medium text-sm text-brand-900 hover:text-gold transition-colors line-clamp-3 break-words w-full block"
                           >
                             {item.name}
                           </Link>
@@ -212,9 +212,9 @@ export function CartSidebar() {
                             )}
                           </div>
                         </div>
-                        <p className="text-[10px] text-muted-foreground mb-2">{item.size}</p>
+                        <p className="text-[10px] text-muted-foreground mb-2 break-all">{item.size}</p>
 
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between gap-1">
                           <div className="flex items-center border rounded-lg h-7 bg-surface w-24 justify-between overflow-hidden">
                             <button
                               className="px-2.5 h-full flex items-center hover:bg-muted transition-colors"
@@ -234,7 +234,7 @@ export function CartSidebar() {
                             onClick={() => remove(item.variant_id)}
                             className="text-[10px] font-medium text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1"
                           >
-                            <Trash2 className="h-3 w-3" /> Remove
+                            <Trash2 className="h-3 w-3" /> <span className="hidden md:inline">Remove</span>
                           </button>
                         </div>
                       </div>

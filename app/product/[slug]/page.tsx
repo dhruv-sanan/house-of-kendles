@@ -23,7 +23,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto max-w-6xl px-4 py-10">
+      <main className="mx-auto max-w-6xl px-4 py-10 w-full max-w-full">
         {/* We pass the server-fetched data to a client component for interactivity */}
         <ProductDetailsClient product={product} isAdmin={isAdmin} />
 
