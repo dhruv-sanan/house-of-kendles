@@ -250,7 +250,7 @@ export default function CheckoutPage() {
           console.log('[Checkout] Order placed successfully:', result.orderUid)
           clear()
           toast.success('Order placed successfully!')
-          router.push(`/order/${result.orderUid}`)
+          router.push(`/order/${result.orderUid}?placed=true`)
         } else {
           console.error('[Checkout] Order creation failed:', result.error)
           toast.error(result.error || 'Failed to place order. Please try again.')

@@ -33,43 +33,43 @@ const QUESTIONS = [
 type RecommendationKey = "French Lavender" | "Natural Rose" | "Cafe Coffee" | "French Vanilla" | "Aqua Fresh" | "Fresh Out" | "Peppermint" | "Grapefruit";
 
 const RECOMMENDATIONS: Record<RecommendationKey, { description: string; profile: string; keywords: string[] }> = {
-  "French Lavender": { 
-    description: "This scent's soothing floral notes are perfect for creating a serene and peaceful atmosphere.", 
+  "French Lavender": {
+    description: "This scent's soothing floral notes are perfect for creating a serene and peaceful atmosphere.",
     profile: "The Tranquility Advocate",
     keywords: ["lavender", "calm", "sleep", "dream", "adulting"] // Added keywords to match products
   },
-  "Natural Rose": { 
-    description: "Classic and elegant, the gentle aroma of rose promotes a sense of balance and self-care.", 
+  "Natural Rose": {
+    description: "Classic and elegant, the gentle aroma of rose promotes a sense of balance and self-care.",
     profile: "The Gentle Dreamer",
     keywords: ["rose", "peony", "floral", "bloom", "tulip", "flower"]
   },
-  "Cafe Coffee": { 
-    description: "Rich and invigorating, this scent captures the robust aroma of freshly brewed coffee, ideal for enhancing focus.", 
+  "Cafe Coffee": {
+    description: "Rich and invigorating, this scent captures the robust aroma of freshly brewed coffee, ideal for enhancing focus.",
     profile: "The Grounded Thinker",
     keywords: ["coffee", "espresso", "latte", "brew", "macchiato", "mocha"]
   },
-  "French Vanilla": { 
-    description: "Sweet and creamy, this scent is the essence of comfort, creating an inviting and indulgent atmosphere.", 
+  "French Vanilla": {
+    description: "Sweet and creamy, this scent is the essence of comfort, creating an inviting and indulgent atmosphere.",
     profile: "The Comfort Seeker",
     keywords: ["vanilla", "sweet", "bakery", "cookie", "cream"]
   },
-  "Aqua Fresh": { 
-    description: "Light, airy, and clean. This scent is like a refreshing ocean mist, perfect for clearing your mind.", 
+  "Aqua Fresh": {
+    description: "Light, airy, and clean. This scent is like a refreshing ocean mist, perfect for clearing your mind.",
     profile: "The Fresh Minimalist",
-    keywords: ["aqua", "ocean", "sea", "blue", "breeze", "evil eye"] 
+    keywords: ["aqua", "ocean", "sea", "blue", "breeze", "evil eye"]
   },
-  "Fresh Out": { 
-    description: "This crisp, sharp scent embodies ultimate cleanliness, ideal for hitting the reset button.", 
+  "Fresh Out": {
+    description: "This crisp, sharp scent embodies ultimate cleanliness, ideal for hitting the reset button.",
     profile: "The Renewalist",
     keywords: ["fresh", "linen", "clean", "cotton", "dealer"] // Matches "Dealer Came Through"
   },
-  "Peppermint": { 
-    description: "Cool and stimulating, the clarifying aroma of peppermint is known to boost energy and improve focus.", 
+  "Peppermint": {
+    description: "Cool and stimulating, the clarifying aroma of peppermint is known to boost energy and improve focus.",
     profile: "The Focused Energizer",
     keywords: ["mint", "eucalyptus", "cool", "focus", "energy"]
   },
-  "Grapefruit": { 
-    description: "Bright and zesty, this vibrant citrus scent is an instant mood-booster, filling your space with positivity.", 
+  "Grapefruit": {
+    description: "Bright and zesty, this vibrant citrus scent is an instant mood-booster, filling your space with positivity.",
     profile: "The Morning Optimist",
     keywords: ["citrus", "grapefruit", "orange", "lemon", "zest", "friday"] // Matches "Friday Feels"
   },
@@ -92,18 +92,29 @@ export function QuizClient({ products }: { products: ProductWithVariants[] }) {
 
   function choose(option: { text: string; keyword: string }) {
     const key = QUESTIONS[step].key
-    setAnswers((a) => ({ ...a, [key]: option }))
+    const newAnswers = { ...answers, [key]: option }
+    setAnswers(newAnswers)
+
+    // Auto-advance with delay
+    setTimeout(() => {
+      if (step < QUESTIONS.length - 1) {
+        setStep(s => s + 1)
+      } else {
+        getRecommendation(newAnswers)
+      }
+    }, 400)
   }
 
-  function getRecommendation() {
-    const scores: Record<RecommendationKey, number> = { 
-      "Cafe Coffee": 0, "French Lavender": 0, "Natural Rose": 0, "Aqua Fresh": 0, 
-      "Fresh Out": 0, "French Vanilla": 0, "Peppermint": 0, "Grapefruit": 0 
+  function getRecommendation(currentAnswers?: Record<string, { keyword: string; text: string }>) {
+    const finalAnswers = currentAnswers || answers
+    const scores: Record<RecommendationKey, number> = {
+      "Cafe Coffee": 0, "French Lavender": 0, "Natural Rose": 0, "Aqua Fresh": 0,
+      "Fresh Out": 0, "French Vanilla": 0, "Peppermint": 0, "Grapefruit": 0
     }
 
     // Logic mapping
-    const moment = answers.moment?.keyword
-    const feeling = answers.feeling?.keyword
+    const moment = finalAnswers.moment?.keyword
+    const feeling = finalAnswers.feeling?.keyword
 
     if (moment === "cafe") { scores["Cafe Coffee"] += 3; scores["French Vanilla"] += 2; }
     if (moment === "garden") { scores["Natural Rose"] += 3; scores["French Lavender"] += 2; scores["Grapefruit"] += 1; }
@@ -117,14 +128,14 @@ export function QuizClient({ products }: { products: ProductWithVariants[] }) {
 
     let topScent: RecommendationKey = "French Lavender"
     let maxScore = 0
-    
-    ;(Object.keys(scores) as RecommendationKey[]).forEach((scent) => {
-      if (scores[scent] > maxScore) {
-        maxScore = scores[scent]
-        topScent = scent
-      }
-    })
-    
+
+      ; (Object.keys(scores) as RecommendationKey[]).forEach((scent) => {
+        if (scores[scent] > maxScore) {
+          maxScore = scores[scent]
+          topScent = scent
+        }
+      })
+
     setResult(topScent)
   }
 
@@ -144,12 +155,12 @@ export function QuizClient({ products }: { products: ProductWithVariants[] }) {
   }
 
   // Filter products based on the result keywords
-  const recommendedProducts = result 
+  const recommendedProducts = result
     ? products.filter(p => {
-        const keywords = RECOMMENDATIONS[result].keywords
-        const searchText = `${p.name} ${p.description} ${p.category}`.toLowerCase()
-        return keywords.some(k => searchText.includes(k))
-      })
+      const keywords = RECOMMENDATIONS[result].keywords
+      const searchText = `${p.name} ${p.description} ${p.category}`.toLowerCase()
+      return keywords.some(k => searchText.includes(k))
+    })
     : []
 
   const currentQuestion = QUESTIONS[step]
@@ -166,21 +177,19 @@ export function QuizClient({ products }: { products: ProductWithVariants[] }) {
               {currentQuestion.q}
             </h2>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
             {currentQuestion.options.map((o) => (
               <button
                 key={o.keyword}
                 onClick={() => choose(o)}
-                className={`group relative flex h-32 flex-col items-center justify-center gap-3 rounded-xl border-2 p-4 text-center transition-all duration-300 ${
-                  answers[currentQuestion.key]?.keyword === o.keyword
-                    ? "border-brand-900 bg-brand-900/5 ring-2 ring-brand-900/20"
-                    : "border-transparent bg-white shadow-md hover:border-brand-900/30 hover:shadow-lg"
-                }`}
+                className={`group relative flex h-32 flex-col items-center justify-center gap-3 rounded-xl border-2 p-4 text-center transition-all duration-300 ${answers[currentQuestion.key]?.keyword === o.keyword
+                  ? "border-brand-900 bg-brand-900/5 ring-2 ring-brand-900/20"
+                  : "border-transparent bg-white shadow-md hover:border-brand-900/30 hover:shadow-lg"
+                  }`}
               >
-                <span className={`text-lg font-medium ${
-                   answers[currentQuestion.key]?.keyword === o.keyword ? "text-brand-900" : "text-gray-700 group-hover:text-brand-900"
-                }`}>
+                <span className={`text-lg font-medium ${answers[currentQuestion.key]?.keyword === o.keyword ? "text-brand-900" : "text-gray-700 group-hover:text-brand-900"
+                  }`}>
                   {o.text}
                 </span>
                 {answers[currentQuestion.key]?.keyword === o.keyword && (
@@ -219,8 +228,8 @@ export function QuizClient({ products }: { products: ProductWithVariants[] }) {
             <p className="text-lg text-muted-foreground leading-relaxed mb-8">
               {RECOMMENDATIONS[result].description}
             </p>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={reset}
               className="text-sm text-muted-foreground hover:text-brand-900"
             >
@@ -247,11 +256,11 @@ export function QuizClient({ products }: { products: ProductWithVariants[] }) {
             ) : (
               <div className="text-center py-12 bg-muted/30 rounded-lg">
                 <p className="text-muted-foreground">
-                  Our artisans are currently crafting more {result} products. 
+                  Our artisans are currently crafting more {result} products.
                   <br /> Check out our bestsellers in the meantime!
                 </p>
                 <Button className="mt-4" variant="outline" asChild>
-                    <a href="/candles">Shop All Candles</a>
+                  <a href="/candles">Shop All Candles</a>
                 </Button>
               </div>
             )}

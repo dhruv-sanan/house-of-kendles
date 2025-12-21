@@ -461,7 +461,7 @@ export function BathSaltClientPage({ product, isAdmin }: { product: ProductWithV
                   <RadioGroupItem value={flavor.name} className="sr-only" />
                   {flavor.name}
                   {flavor.isBestseller && (
-                    <Badge className="absolute -top-3 -right-3 bg-gold text-black shadow-md">
+                    <Badge className="absolute -top-3 text-xs -right-3 bg-gold text-black shadow-md">
                       Bestseller
                     </Badge>
                   )}

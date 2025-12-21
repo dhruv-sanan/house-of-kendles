@@ -1,9 +1,11 @@
 "use server"
 
-import { supabase } from "@/lib/supabase/client"
+import { createClient } from "@/utils/supabase/server"
+import { createAdminClient } from "@/utils/supabase/admin"
 import { z } from "zod"
 import { revalidatePath } from "next/cache"
 import { CartItem } from "@/lib/cart"
+import { type OrderStatus } from "@/types/order.types"
 
 const CustomerDetailsSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -17,6 +19,7 @@ const CustomerDetailsSchema = z.object({
 
 // --- Helper to generate ID ---
 async function generateUniqueOrderId(retryCount = 0): Promise<string> {
+  const supabase = await createClient()
   // 1. Define length: Starts at 4, increases if we hit too many retries (exhaustion safety)
   const length = retryCount > 6 ? 5 : 4;
 
@@ -44,6 +47,7 @@ async function generateUniqueOrderId(retryCount = 0): Promise<string> {
 }
 
 export async function createOrder(cartItems: CartItem[], formData: FormData) {
+  const supabase = await createClient()
   const validatedFields = CustomerDetailsSchema.safeParse({
     name: formData.get("name"),
     address: formData.get("address"),
@@ -86,7 +90,7 @@ export async function createOrder(cartItems: CartItem[], formData: FormData) {
         .eq("is_active", true)
         .single()
 
-      if (coupon && subtotal >= coupon.min_order_value) {
+      if (coupon && subtotal >= (coupon.min_order_value || 0)) {
         if (coupon.discount_type === 'percentage') {
           discountAmount = (subtotal * coupon.discount_value) / 100
         } else {
@@ -177,11 +181,12 @@ export async function createOrder(cartItems: CartItem[], formData: FormData) {
 }
 
 export async function updateOrderStatus(orderId: number, newStatus: string) {
+  const supabase = await createClient()
   console.log('[Admin] Updating order status:', orderId, 'to', newStatus)
 
   const { data, error } = await supabase
     .from("orders")
-    .update({ status: newStatus })
+    .update({ status: newStatus as OrderStatus })
     .eq("id", orderId)
     .select('id, status')
     .single()
@@ -198,6 +203,7 @@ export async function updateOrderStatus(orderId: number, newStatus: string) {
 }
 
 export async function getOrders() {
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from("orders")
     .select(`
@@ -206,7 +212,8 @@ export async function getOrders() {
       order_date,
       total_amount,
       status,
-      customers ( name ),
+      customers ( name, phone, email, address ),
+      addresses ( street, city, state, zip_code ),
       order_items ( 
         quantity,
         product_variants (
@@ -218,11 +225,34 @@ export async function getOrders() {
     `)
     .order("order_date", { ascending: false })
 
-  if (error) return []
+  if (error) {
+    console.error("Error fetching orders:", error)
+    return []
+  }
+
+  // Debug log to check raw data structure for the first order
+  if (data && data.length > 0) {
+    console.log('[getOrders Debug] First row raw:', JSON.stringify(data[0], null, 2))
+  }
 
   return data.map(order => {
     const customer = Array.isArray(order.customers) ? order.customers[0] : order.customers
-    return { ...order, customer_name: customer?.name || "N/A" }
+    const deliveryAddress = Array.isArray(order.addresses) ? order.addresses[0] : order.addresses
+
+    let formattedAddress = customer?.address
+    if (deliveryAddress) {
+      formattedAddress = `${deliveryAddress.street}, ${deliveryAddress.city}, ${deliveryAddress.state} ${deliveryAddress.zip_code}`
+    } else {
+      console.log(`[getOrders Debug] No delivery address found for ${order.order_uid}. Customer address:`, customer?.address)
+    }
+
+    return {
+      ...order,
+      customer_name: customer?.name || "N/A",
+      customer_email: customer?.email,
+      customer_phone: customer?.phone,
+      customer_address: formattedAddress
+    }
   })
 }
 

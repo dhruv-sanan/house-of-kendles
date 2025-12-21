@@ -11,6 +11,7 @@ import { ORDER_STATUS_INFO, type OrderStatus } from '@/types/order.types'
 import { MapPin, Phone, Mail, User, Gift, ShoppingBag, ArrowLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { FadeIn, SlideIn } from '@/components/ui/motion-wrappers'
+import { OrderWhatsAppRedirect } from '@/components/order-whatsapp-redirect'
 
 // Disable caching so order status is always current
 export const dynamic = 'force-dynamic'
@@ -51,6 +52,10 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       <SiteHeader />
       <main className="min-h-screen bg-surface">
         <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+          <OrderWhatsAppRedirect
+            orderUid={order.order_uid || ''}
+            customerName={order.customers?.name || 'Customer'}
+          />
           {/* Back Link */}
           {isOwner && (
             <Link

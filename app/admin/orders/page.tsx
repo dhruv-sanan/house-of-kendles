@@ -10,6 +10,7 @@ import { getOrders, type OrderWithItems } from "@/app/_actions/orderActions"
 import { OrderStatusChanger } from "./OrderStatusChanger"
 import { CheckAvailabilityButton } from "./CheckAvailabilityButton"
 import { OrderDetailsModal } from "./OrderDetailsModal" // <-- IMPORT NEW COMPONENT
+import { CustomerDetailsDialog } from "./CustomerDetailsDialog"
 //TODO add check availability button for all pending orders and create action of reducing stock when state changes fro pending to processing
 export default async function AdminOrdersPage() {
   const orders = await getOrders()
@@ -43,7 +44,14 @@ export default async function AdminOrdersPage() {
                 orders.map((order: OrderWithItems) => (
                   <TableRow key={order.id}>
                     <TableCell className="font-medium">{order.order_uid}</TableCell>
-                    <TableCell>{order.customer_name}</TableCell>
+                    <TableCell>
+                      <CustomerDetailsDialog
+                        customerName={order.customer_name}
+                        email={order.customer_email}
+                        phone={order.customer_phone}
+                        address={order.customer_address}
+                      />
+                    </TableCell>
                     <TableCell>{new Date(order.order_date).toLocaleDateString()}</TableCell>
                     <TableCell>₹{order.total_amount}</TableCell>
                     <TableCell>
@@ -54,7 +62,7 @@ export default async function AdminOrdersPage() {
                       <OrderStatusChanger orderId={order.id} currentStatus={order.status} />
                     </TableCell>
                     <TableCell>
-                      <CheckAvailabilityButton orderId={order.id} orderUid={order.order_uid} />
+                      <CheckAvailabilityButton orderId={order.id} orderUid={order.order_uid || ''} />
                     </TableCell>
                   </TableRow>
                 ))
