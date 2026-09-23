@@ -24,8 +24,9 @@ export async function middleware(request: NextRequest) {
 
 
     const jwtSecret = process.env.JWT_SECRET
+    // DEBUG: Check secret and token
     if (!jwtSecret) {
-      console.error('[Middleware] FATAL: JWT_SECRET environment variable is NOT loaded.')
+      console.error('[Middleware] ❌ FATAL: JWT_SECRET environment variable is NOT loaded.')
       return new Response('Internal Server Error: Application not configured.', {
         status: 500,
       })
@@ -37,15 +38,19 @@ export async function middleware(request: NextRequest) {
     }
 
     const token = request.cookies.get('auth_token')?.value
+
     if (!token) {
+      console.log('[Middleware] ⚠️ No auth_token cookie found. Redirecting to login.')
       return NextResponse.redirect(new URL('/admin/login', request.url))
     }
 
     try {
       const secret = new TextEncoder().encode(jwtSecret)
       await jwtVerify(token, secret)
+      console.log('[Middleware] ✅ Admin token verified successfully.')
       return NextResponse.next()
-    } catch {
+    } catch (err) {
+      console.error('[Middleware] ❌ Token verification failed:', err)
       const response = NextResponse.redirect(new URL('/admin/login', request.url))
       response.cookies.delete('auth_token')
       return response

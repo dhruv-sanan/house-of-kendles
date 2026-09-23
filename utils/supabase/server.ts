@@ -25,15 +25,25 @@ import type { Database } from '@/types/database.types'
  */
 export async function createClient() {
     const cookieStore = await cookies()
+    console.log('[Supabase Server] cookieStore obtained:', !!cookieStore)
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
+    // DEBUG: Check imports
+    console.log('[Supabase Server] Imports check:', {
+        hasSsr: !!createServerClient,
+        hasUrl: !!supabaseUrl,
+        hasKey: !!supabaseAnonKey
+    })
+
     if (!supabaseUrl || !supabaseAnonKey) {
+        console.error('[Supabase Server] Missing env vars')
         throw new Error(
             'Missing Supabase environment variables. Please ensure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set in .env.local'
         )
     }
+
 
     return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
         cookies: {

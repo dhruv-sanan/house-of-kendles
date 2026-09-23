@@ -27,8 +27,6 @@ export function SignInContent({ redirectTo = '/' }: SignInContentProps) {
             const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
             const redirectUrl = `${siteUrl}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`
 
-            const redirectUrl = `${siteUrl}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`
-
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {

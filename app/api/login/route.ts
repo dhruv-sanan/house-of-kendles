@@ -6,13 +6,13 @@ import { compare } from "bcrypt";
 // ✅ HARDCODED credentials (bypass env variable parsing issues)
 const ADMIN_USERNAME = "admin";
 const ADMIN_HASH = "$2b$12$6hvpGdGikepllWAFfoeWcOKYmpifkKhyNAcoxsRwD1YYvZZ8ulCYq";
-const JWT_SECRET = "house-of-kendles-super-secret-key";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function POST(request: Request) {
   console.log("\n--- [API Route Login Check] ---");
   console.log(`Username configured: ${ADMIN_USERNAME}`);
   console.log(`Hash configured: ${ADMIN_HASH.substring(0, 10)}...`);
-  console.log(`JWT Secret configured: ${JWT_SECRET.substring(0, 10)}...`);
+  console.log(`JWT Secret configured: ${JWT_SECRET ? JWT_SECRET.substring(0, 10) : "MISSING"}...`);
   console.log("-----------------------------\n");
 
   if (!ADMIN_USERNAME || !ADMIN_HASH || !JWT_SECRET) {
